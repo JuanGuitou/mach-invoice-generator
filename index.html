@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mach Invoice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -386,7 +387,7 @@
         </div>
 
         <!-- Download Button -->
-        <button class="download-btn" onclick="downloadTxt()" id="downloadBtn">⬇ Descargar como Texto</button>
+        <button class="download-btn" onclick="downloadPDF()" id="downloadBtn">⬇ Descargar PDF</button>
     </div>
 
     <script>
@@ -415,7 +416,7 @@
                 subtotal: 'Subtotal',
                 total: 'Total',
                 addItem: 'Agregar Concepto',
-                download: 'Descargar como Texto',
+                download: 'Descargar PDF',
                 from: 'De',
                 to: 'Para',
                 invoice: 'Factura',
@@ -446,7 +447,7 @@
                 subtotal: 'Subtotal',
                 total: 'Total',
                 addItem: 'Add Line Item',
-                download: 'Download as Text',
+                download: 'Download PDF',
                 from: 'From',
                 to: 'To',
                 invoice: 'Invoice',
@@ -548,11 +549,76 @@
             });
         }
 
-        function downloadTxt() {
+        function downloadPDF() {
+            const { jsPDF } = window;
+            if (!jsPDF) {
+                alert('Error: jsPDF not loaded');
+                return;
+            }
+
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 15;
+            let yPos = margin;
+
+            const colorPrimary = [29, 158, 117];
+            const colorText = [45, 45, 45];
+            const colorSecondary = [150, 150, 150];
+
+            // Header
+            doc.setFontSize(24);
+            doc.setTextColor(...colorPrimary);
+            const headerText = currentLanguage === 'es' ? 'Factura' : 'Invoice';
+            doc.text(headerText, margin, yPos);
+            doc.setFontSize(14);
             const invoiceNum = document.getElementById('invoiceNumber').value;
-            const issueDate = document.getElementById('issueDate').value;
-            const dueDate = document.getElementById('dueDate').value;
+            doc.text(invoiceNum, pageWidth - margin - 40, yPos);
+
+            yPos += 12;
+
+            // Line
+            doc.setDrawColor(...colorPrimary);
+            doc.setLineWidth(0.5);
+            doc.line(margin, yPos, pageWidth - margin, yPos);
+
+            yPos += 8;
+
+            // From / To
+            doc.setFontSize(10);
+            doc.setTextColor(...colorSecondary);
+            const fromText = currentLanguage === 'es' ? 'De' : 'From';
+            const toText = currentLanguage === 'es' ? 'Para' : 'To';
+            doc.text(fromText, margin, yPos);
+            doc.text(toText, pageWidth / 2, yPos);
+
+            yPos += 6;
+
+            // Company
+            doc.setFontSize(9);
+            doc.setTextColor(...colorText);
+            const companyLines = [
+                'Mach Consulting LLC',
+                '8 The Green',
+                '19901 Dover, DE',
+                'United States',
+                'EIN: 99 - 1082639',
+                'Juan Guitou'
+            ];
             
+            companyLines.forEach(line => {
+                doc.text(line, margin, yPos);
+                yPos += 4;
+            });
+
+            // Client
+            const clientStartY = yPos - (companyLines.length * 4);
+            let clientY = clientStartY;
             const clientName = document.getElementById('clientName').value;
             const clientRFC = document.getElementById('clientRFC').value;
             const clientStreet = document.getElementById('clientStreet').value;
@@ -563,71 +629,143 @@
             const clientState = document.getElementById('clientState').value;
             const clientCountry = document.getElementById('clientCountry').value;
 
-            const totals = calculateTotals();
-            
-            const t = labels[currentLanguage];
+            const clientLines = [
+                clientName,
+                clientRFC ? `RFC: ${clientRFC}` : '',
+                `${clientStreet} ${clientStreetNumber}`.trim(),
+                clientColony,
+                `${clientCity}, ${clientMunicipality}`.trim(),
+                `${clientState}, ${clientCountry}`.trim()
+            ].filter(line => line.trim());
 
-            let content = '';
-            content += '═════════════════════════════════════════════════════\n';
-            content += (currentLanguage === 'es' ? 'FACTURA' : 'INVOICE') + ' #' + invoiceNum + '\n';
-            content += '═════════════════════════════════════════════════════\n\n';
+            clientLines.forEach(line => {
+                doc.text(line, pageWidth / 2, clientY);
+                clientY += 4;
+            });
 
-            content += currentLanguage === 'es' ? 'DE:' : 'FROM:\n';
-            content += 'Mach Consulting LLC\n';
-            content += '8 The Green\n';
-            content += '19901 Dover, DE\n';
-            content += 'United States\n';
-            content += 'EIN: 99 - 1082639\n';
-            content += 'Juan Guitou\n\n';
+            yPos = Math.max(yPos, clientY) + 8;
 
-            content += currentLanguage === 'es' ? 'PARA:' : 'TO:\n';
-            content += (clientName || '-') + '\n';
-            if (clientRFC) content += 'RFC: ' + clientRFC + '\n';
-            if (clientStreet || clientStreetNumber) content += clientStreet + ' ' + clientStreetNumber + '\n';
-            if (clientColony) content += clientColony + '\n';
-            if (clientCity || clientMunicipality) content += clientCity + ', ' + clientMunicipality + '\n';
-            if (clientState || clientCountry) content += clientState + ', ' + clientCountry + '\n';
-            
-            content += '\n─────────────────────────────────────────────────────\n';
-            content += (currentLanguage === 'es' ? 'FECHAS' : 'DATES') + '\n';
-            content += (currentLanguage === 'es' ? 'Emisión' : 'Issue') + ': ' + issueDate + '\n';
-            content += (currentLanguage === 'es' ? 'Vencimiento' : 'Due') + ': ' + dueDate + '\n';
+            // Dates
+            doc.setFontSize(9);
+            doc.setTextColor(...colorSecondary);
+            const issueText = currentLanguage === 'es' ? 'Emisión' : 'Issue';
+            const dueText = currentLanguage === 'es' ? 'Vencimiento' : 'Due';
+            const issueDate = document.getElementById('issueDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            doc.text(`${issueText}: ${issueDate}`, margin, yPos);
+            doc.text(`${dueText}: ${dueDate}`, pageWidth / 2, yPos);
 
-            content += '\n─────────────────────────────────────────────────────\n';
-            content += currentLanguage === 'es' ? 'CONCEPTOS' : 'LINE ITEMS\n';
-            content += '─────────────────────────────────────────────────────\n\n';
+            yPos += 12;
+
+            // Table
+            const colWidths = {
+                concept: 70,
+                quantity: 25,
+                unitPrice: 35,
+                tax: 25,
+                subtotal: 35
+            };
+
+            // Headers
+            doc.setFillColor(...colorPrimary);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+
+            const conceptText = currentLanguage === 'es' ? 'Concepto' : 'Concept';
+            const qtyText = currentLanguage === 'es' ? 'Cant.' : 'Qty';
+            const unitPriceText = currentLanguage === 'es' ? 'P. Unit.' : 'Unit Price';
+            const taxText = currentLanguage === 'es' ? 'Impuesto' : 'Tax';
+            const subtotalText = currentLanguage === 'es' ? 'Subtotal' : 'Subtotal';
+
+            doc.rect(margin, yPos, colWidths.concept, 7, 'F');
+            doc.text(conceptText, margin + 2, yPos + 5);
+
+            doc.rect(margin + colWidths.concept, yPos, colWidths.quantity, 7, 'F');
+            doc.text(qtyText, margin + colWidths.concept + 2, yPos + 5);
+
+            doc.rect(margin + colWidths.concept + colWidths.quantity, yPos, colWidths.unitPrice, 7, 'F');
+            doc.text(unitPriceText, margin + colWidths.concept + colWidths.quantity + 2, yPos + 5);
+
+            doc.rect(margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice, yPos, colWidths.tax, 7, 'F');
+            doc.text(taxText, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + 2, yPos + 5);
+
+            doc.rect(margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax, yPos, colWidths.subtotal, 7, 'F');
+            doc.text(subtotalText, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax + 2, yPos + 5);
+
+            yPos += 9;
+
+            // Rows
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...colorText);
+            doc.setFontSize(8);
 
             document.querySelectorAll('.item-row').forEach(row => {
+                if (yPos > pageHeight - 40) {
+                    doc.addPage();
+                    yPos = margin;
+                }
+
                 const concept = row.querySelector('.concept').value || '-';
                 const quantity = row.querySelector('.quantity').value || 0;
                 const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
                 const tax = parseFloat(row.querySelector('.tax').value) || 0;
                 const itemTotal = (parseFloat(quantity) * unitPrice) + tax;
 
-                content += concept + '\n';
-                content += '  Cantidad: ' + quantity + ' | Precio: $' + unitPrice.toFixed(2) + ' | Impuesto: $' + tax.toFixed(2) + ' | Total: $' + itemTotal.toFixed(2) + '\n\n';
+                doc.text(concept, margin + 2, yPos);
+                doc.text(quantity.toString(), margin + colWidths.concept + 2, yPos, { align: 'right' });
+                doc.text(`$${unitPrice.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + 2, yPos, { align: 'right' });
+                doc.text(`$${tax.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + 2, yPos, { align: 'right' });
+                doc.text(`$${itemTotal.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax + 2, yPos, { align: 'right' });
+
+                yPos += 6;
             });
 
-            content += '═════════════════════════════════════════════════════\n';
-            content += (currentLanguage === 'es' ? 'RESUMEN' : 'SUMMARY') + '\n';
-            content += '═════════════════════════════════════════════════════\n';
-            content += (currentLanguage === 'es' ? 'Subtotal' : 'Subtotal') + ':     $' + totals.subtotal.toFixed(2) + '\n';
-            content += (currentLanguage === 'es' ? 'Impuesto' : 'Tax') + ':        $' + totals.totalTax.toFixed(2) + '\n';
-            content += '─────────────────────────────────────────────────────\n';
-            content += (currentLanguage === 'es' ? 'TOTAL' : 'TOTAL') + ':         $' + totals.total.toFixed(2) + '\n';
-            content += '═════════════════════════════════════════════════════\n\n';
-            content += 'Mach Consulting LLC\n';
-            content += 'juan@machconsultinghr.com\n';
+            yPos += 4;
 
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Factura_${invoiceNum}_${issueDate}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Separator line
+            doc.setDrawColor(...colorPrimary);
+            doc.setLineWidth(0.5);
+            doc.line(margin, yPos, pageWidth - margin, yPos);
+
+            yPos += 6;
+
+            // Totals
+            const totals = calculateTotals();
+            const totalX = pageWidth - margin - 60;
+            doc.setFontSize(9);
+            doc.setTextColor(...colorSecondary);
+
+            const subtotalLabel = currentLanguage === 'es' ? 'Subtotal:' : 'Subtotal:';
+            doc.text(subtotalLabel, totalX, yPos);
+            doc.text(`$${totals.subtotal.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
+
+            yPos += 6;
+
+            const taxLabel = currentLanguage === 'es' ? 'Impuesto:' : 'Tax:';
+            doc.text(taxLabel, totalX, yPos);
+            doc.text(`$${totals.totalTax.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
+
+            yPos += 8;
+
+            // Total
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...colorPrimary);
+            doc.setFontSize(12);
+
+            const totalFinalLabel = currentLanguage === 'es' ? 'TOTAL:' : 'TOTAL:';
+            doc.text(totalFinalLabel, totalX, yPos);
+            doc.text(`$${totals.total.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
+
+            // Footer
+            yPos = pageHeight - 15;
+            doc.setFontSize(8);
+            doc.setTextColor(...colorSecondary);
+            doc.text('Mach Consulting LLC | juan@machconsultinghr.com', pageWidth / 2, yPos, { align: 'center' });
+
+            // Save
+            const filename = `Factura_${invoiceNum}_${issueDate}.pdf`;
+            doc.save(filename);
         }
 
         // Initialize
