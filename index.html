@@ -8,14 +8,16 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green: #1d9e75;
-      --green-dark: #157a5b;
-      --green-light: #e8f5f0;
-      --gray-bg: #f4f6f5;
-      --gray-border: #e0e5e3;
-      --gray-text: #666;
-      --dark: #1e2926;
-      --radius: 10px;
+      --teal:       #1aa090;
+      --teal-dark:  #178075;
+      --teal-light: #e6f4f2;
+      --teal-border:#aed5d0;
+      --blue:       #1a4d8a;
+      --gray-bg:    #f4f6f5;
+      --gray-border:#e0e5e3;
+      --gray-text:  #666;
+      --dark:       #1e2926;
+      --radius:     10px;
     }
 
     body {
@@ -39,21 +41,12 @@
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .logo-mark {
-      width: 44px;
-      height: 44px;
-      background: var(--green);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -1px;
+    .logo-svg-wrap {
+      width: 48px;
+      height: 48px;
       flex-shrink: 0;
     }
 
@@ -90,17 +83,17 @@
     }
 
     .card-title {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--green);
+      letter-spacing: 0.09em;
+      color: var(--teal);
       margin-bottom: 16px;
     }
 
-    /* ── GRID LAYOUTS ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    /* ── GRIDS ── */
+    .grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3    { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 
     /* ── FORM FIELDS ── */
@@ -129,20 +122,20 @@
 
     input:focus {
       outline: none;
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(26,160,144,0.12);
       background: white;
     }
 
     /* ── COMPANY INFO BOX ── */
     .company-box {
-      background: var(--green-light);
-      border: 1px solid #b8ddd1;
+      background: var(--teal-light);
+      border: 1px solid var(--teal-border);
       border-radius: var(--radius);
       padding: 16px 20px;
       font-size: 13px;
       line-height: 1.8;
-      color: #2d5a49;
+      color: #2d5a54;
     }
 
     .company-box .name {
@@ -154,20 +147,17 @@
 
     .company-box .meta {
       font-size: 11px;
-      color: #5a8a78;
+      color: #5a8a82;
       margin-top: 6px;
     }
 
     /* ── ITEMS TABLE ── */
     .table-wrapper { overflow-x: auto; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
     thead th {
-      background: var(--green);
+      background: var(--teal);
       color: white;
       font-size: 11px;
       font-weight: 600;
@@ -188,9 +178,10 @@
     tbody tr:hover td { background: #fafcfb; }
 
     td input { background: transparent; border-color: transparent; }
-    td input:focus { background: white; border-color: var(--green); }
+    td input:focus { background: white; border-color: var(--teal); }
 
     .tr { text-align: right; }
+
     .del-btn {
       background: none;
       border: none;
@@ -216,7 +207,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .add-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+    .add-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
 
     /* ── TOTALS ── */
     .totals-row {
@@ -233,8 +224,8 @@
     }
 
     .total-box.highlight {
-      background: var(--green);
-      border-color: var(--green);
+      background: var(--teal);
+      border-color: var(--teal);
     }
 
     .total-box .t-label {
@@ -278,48 +269,68 @@
     }
 
     .dl-btn.es {
-      background: var(--green);
+      background: var(--teal);
       color: white;
     }
-    .dl-btn.es:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(29,158,117,0.35); }
+    .dl-btn.es:hover {
+      background: var(--teal-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(26,160,144,0.35);
+    }
 
     .dl-btn.en {
       background: white;
-      color: var(--green);
-      border: 2px solid var(--green);
+      color: var(--teal);
+      border: 2px solid var(--teal);
     }
-    .dl-btn.en:hover { background: var(--green-light); transform: translateY(-1px); }
+    .dl-btn.en:hover {
+      background: var(--teal-light);
+      transform: translateY(-1px);
+    }
 
-    .dl-btn svg { flex-shrink: 0; }
-
-    /* ── CURRENCY TAG ── */
+    /* ── CURRENCY BADGE ── */
     .currency-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: var(--green-light);
-      border: 1px solid #b8ddd1;
+      background: var(--teal-light);
+      border: 1px solid var(--teal-border);
       border-radius: 20px;
-      padding: 3px 10px;
+      padding: 4px 12px;
       font-size: 11px;
       font-weight: 600;
-      color: var(--green-dark);
+      color: var(--teal-dark);
     }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
-      .grid-2, .grid-3, .btn-row { grid-template-columns: 1fr; }
-      .totals-row { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .btn-row, .totals-row { grid-template-columns: 1fr; }
       body { padding: 12px 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
+  <!-- ══ TOP BAR ══ -->
   <div class="topbar">
     <div class="logo-area">
-      <div class="logo-mark">M</div>
+      <!-- Mach logo recreated as inline SVG with gradient -->
+      <div class="logo-svg-wrap">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+          <defs>
+            <linearGradient id="machGrad" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+              <stop offset="0%"   stop-color="#1aa090"/>
+              <stop offset="100%" stop-color="#1a4d8a"/>
+            </linearGradient>
+          </defs>
+          <!-- Circle -->
+          <circle cx="50" cy="50" r="44" fill="none" stroke="url(#machGrad)" stroke-width="3.6"/>
+          <!-- Left mountain/A -->
+          <polyline points="3,97 31,7 66,97"  fill="none" stroke="url(#machGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Right mountain/A -->
+          <polyline points="34,97 69,7 97,97" fill="none" stroke="url(#machGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="logo-text">
         Mach Consulting
         <span>Invoice Generator</span>
@@ -335,7 +346,6 @@
 
     <!-- ROW 1: Invoice Details + Company -->
     <div class="grid-2">
-
       <div class="card">
         <p class="card-title">Datos de la Factura</p>
         <div style="display:flex;flex-direction:column;gap:12px;">
@@ -363,7 +373,6 @@
           <p class="meta">EIN: 99 - 1082639 &nbsp;·&nbsp; Responsable: Juan Guitou</p>
         </div>
       </div>
-
     </div>
 
     <!-- ROW 2: Client Data -->
@@ -424,9 +433,7 @@
               <th style="width:36px;"></th>
             </tr>
           </thead>
-          <tbody id="itemsBody">
-            <!-- rows injected by JS -->
-          </tbody>
+          <tbody id="itemsBody"></tbody>
         </table>
       </div>
       <button class="add-btn" onclick="addRow()">＋ Agregar concepto</button>
@@ -448,14 +455,14 @@
       </div>
     </div>
 
-    <!-- ROW 5: Download buttons -->
+    <!-- ROW 5: Buttons -->
     <div class="btn-row">
       <button class="dl-btn es" onclick="generatePDF('es')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Descargar en Español (PDF)
       </button>
       <button class="dl-btn en" onclick="generatePDF('en')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download in English (PDF)
       </button>
     </div>
@@ -463,12 +470,11 @@
   </div><!-- /wrapper -->
 
 <script>
-  /* ─── DATA ─────────────────────────────────────── */
+  /* ─── STATE ───────────────────────────────────── */
   const rows = [];
 
-  function addRow(concept = '', qty = 1, unitPrice = 0, tax = 0) {
-    const id = Date.now() + Math.random();
-    rows.push({ id, concept, qty, unitPrice, tax });
+  function addRow(concept='', qty=1, unitPrice=0, tax=0) {
+    rows.push({ id: Date.now() + Math.random(), concept, qty, unitPrice, tax });
     renderRows();
     recalc();
   }
@@ -486,43 +492,39 @@
     rows.forEach(row => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><input type="text"   class="concept"   data-id="${row.id}" value="${esc(row.concept)}"   style="width:100%;min-width:180px;" placeholder="Descripción del servicio" /></td>
-        <td class="tr"><input type="number" class="qty"      data-id="${row.id}" value="${row.qty}"       style="width:100%;" min="0" step="1" /></td>
-        <td class="tr"><input type="number" class="unitPrice" data-id="${row.id}" value="${row.unitPrice}" style="width:100%;" min="0" step="0.01" /></td>
-        <td class="tr"><input type="number" class="tax"      data-id="${row.id}" value="${row.tax}"       style="width:100%;" min="0" step="0.01" /></td>
+        <td><input type="text"   class="concept"    data-id="${row.id}" value="${esc(row.concept)}"   style="width:100%;min-width:180px;" placeholder="Descripción del servicio"/></td>
+        <td class="tr"><input type="number" class="qty"       data-id="${row.id}" value="${row.qty}"       style="width:100%;" min="0" step="1"/></td>
+        <td class="tr"><input type="number" class="unitPrice" data-id="${row.id}" value="${row.unitPrice}" style="width:100%;" min="0" step="0.01"/></td>
+        <td class="tr"><input type="number" class="tax"       data-id="${row.id}" value="${row.tax}"       style="width:100%;" min="0" step="0.01"/></td>
         <td class="tr"><span class="row-total" data-id="${row.id}">$0.00</span></td>
         <td><button class="del-btn" onclick="removeRow(${row.id})">✕</button></td>
       `;
       tbody.appendChild(tr);
     });
-
-    // Attach live listeners
     tbody.querySelectorAll('input').forEach(inp => {
       inp.addEventListener('input', () => {
-        const id = +inp.dataset.id;
-        const r = rows.find(x => x.id === id);
+        const r = rows.find(x => x.id === +inp.dataset.id);
         if (!r) return;
-        if (inp.classList.contains('concept'))   r.concept   = inp.value;
-        if (inp.classList.contains('qty'))        r.qty       = parseFloat(inp.value) || 0;
-        if (inp.classList.contains('unitPrice'))  r.unitPrice = parseFloat(inp.value) || 0;
-        if (inp.classList.contains('tax'))        r.tax       = parseFloat(inp.value) || 0;
+        if (inp.classList.contains('concept'))    r.concept   = inp.value;
+        if (inp.classList.contains('qty'))         r.qty       = parseFloat(inp.value)||0;
+        if (inp.classList.contains('unitPrice'))   r.unitPrice = parseFloat(inp.value)||0;
+        if (inp.classList.contains('tax'))         r.tax       = parseFloat(inp.value)||0;
         recalc();
       });
     });
   }
 
-  function esc(str) {
-    return String(str).replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function recalc() {
-    let subtotal = 0, totalTax = 0;
+    let subtotal=0, totalTax=0;
     rows.forEach(r => {
-      const lineSub = r.qty * r.unitPrice;
-      subtotal  += lineSub;
-      totalTax  += r.tax;
+      const ls = r.qty * r.unitPrice;
+      subtotal += ls; totalTax += r.tax;
       const el = document.querySelector(`.row-total[data-id="${r.id}"]`);
-      if (el) el.textContent = fmt(lineSub + r.tax);
+      if (el) el.textContent = fmt(ls + r.tax);
     });
     document.getElementById('dispSubtotal').textContent = fmt(subtotal);
     document.getElementById('dispTax').textContent      = fmt(totalTax);
@@ -531,51 +533,57 @@
   }
 
   function fmt(n) {
-    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
   }
 
   function fmtDate(d) {
-    if (!d) return '';
-    const [y, m, day] = d.split('-');
+    if (!d) return '—';
+    const [y,m,day] = d.split('-');
     return `${day}/${m}/${y}`;
   }
 
   /* ─── PDF GENERATION ───────────────────────────── */
   const T = {
     es: {
-      title: 'FACTURA',
-      from: 'Emisor', to: 'Cliente',
-      invoiceNum: 'N° de Factura', issue: 'Fecha de Emisión', due: 'Fecha de Vencimiento',
-      concept: 'Concepto', qty: 'Cantidad', unitPrice: 'Precio Unitario',
-      tax: 'Impuesto', subtotal: 'Subtotal', total: 'Total',
-      currency: 'Moneda: Dólares Estadounidenses (USD)',
-      rfc: 'RFC', street: 'Vialidad', extNum: 'N° Exterior',
-      colony: 'Colonia', city: 'Localidad', municipality: 'Municipio',
-      state: 'Entidad Federativa', country: 'País',
-      responsible: 'Responsable',
-      footer: 'Mach Consulting LLC · juan@machconsultinghr.com'
+      title:'FACTURA', from:'Emisor', to:'Cliente',
+      invoiceNum:'N° de Factura', issue:'Fecha de Emisión', due:'Fecha de Vencimiento',
+      concept:'Concepto', qty:'Cantidad', unitPrice:'Precio Unitario',
+      tax:'Impuesto', subtotal:'Subtotal', total:'Total',
+      currency:'Moneda: Dólares Estadounidenses (USD)',
+      responsible:'Responsable', saveBtn:'⬇ Guardar como PDF',
+      saveNote:'En el diálogo de impresión seleccioná "Guardar como PDF"',
+      footer:'Mach Consulting LLC · juan@machconsultinghr.com'
     },
     en: {
-      title: 'INVOICE',
-      from: 'From', to: 'Bill To',
-      invoiceNum: 'Invoice Number', issue: 'Issue Date', due: 'Due Date',
-      concept: 'Description', qty: 'Qty', unitPrice: 'Unit Price',
-      tax: 'Tax', subtotal: 'Subtotal', total: 'Total',
-      currency: 'Currency: United States Dollars (USD)',
-      rfc: 'RFC', street: 'Street', extNum: 'Ext. Number',
-      colony: 'Colony', city: 'City', municipality: 'Municipality',
-      state: 'State', country: 'Country',
-      responsible: 'Contact',
-      footer: 'Mach Consulting LLC · juan@machconsultinghr.com'
+      title:'INVOICE', from:'From', to:'Bill To',
+      invoiceNum:'Invoice Number', issue:'Issue Date', due:'Due Date',
+      concept:'Description', qty:'Qty', unitPrice:'Unit Price',
+      tax:'Tax', subtotal:'Subtotal', total:'Total',
+      currency:'Currency: United States Dollars (USD)',
+      responsible:'Contact', saveBtn:'⬇ Save as PDF',
+      saveNote:'In the print dialog, select "Save as PDF"',
+      footer:'Mach Consulting LLC · juan@machconsultinghr.com'
     }
   };
 
+  /* Inline SVG logo for the PDF (same gradient) */
+  const LOGO_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+    <defs>
+      <linearGradient id="mlg" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+        <stop offset="0%"   stop-color="#1aa090"/>
+        <stop offset="100%" stop-color="#1a4d8a"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="44" fill="none" stroke="url(#mlg)" stroke-width="3.6"/>
+    <polyline points="3,97 31,7 66,97"  fill="none" stroke="url(#mlg)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="34,97 69,7 97,97" fill="none" stroke="url(#mlg)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
   function generatePDF(lang) {
-    const t = T[lang];
+    const t      = T[lang];
     const totals = recalc();
 
-    // Gather form values
-    const invNum      = document.getElementById('invoiceNumber').value || '—';
+    const invNum      = document.getElementById('invoiceNumber').value   || '—';
     const issueDate   = fmtDate(document.getElementById('issueDate').value);
     const dueDate     = fmtDate(document.getElementById('dueDate').value);
     const clientName  = document.getElementById('clientName').value;
@@ -588,15 +596,15 @@
     const clientState = document.getElementById('clientState').value;
     const clientCou   = document.getElementById('clientCountry').value;
 
-    // Build items rows HTML
+    /* Item rows */
     let itemsHtml = '';
-    rows.forEach((r, i) => {
-      const lineSub = r.qty * r.unitPrice;
+    rows.forEach((r,i) => {
+      const lineSub   = r.qty * r.unitPrice;
       const lineTotal = lineSub + r.tax;
-      const bg = i % 2 === 0 ? '#fff' : '#f7faf9';
+      const bg = i%2===0 ? '#fff' : '#f7faf9';
       itemsHtml += `
-        <tr style="background:${bg};">
-          <td style="padding:9px 12px;font-size:12px;color:#1e2926;border-bottom:1px solid #eef2f0;">${r.concept || '—'}</td>
+        <tr style="background:${bg}">
+          <td style="padding:9px 12px;font-size:12px;color:#1e2926;border-bottom:1px solid #eef2f0;">${r.concept||'—'}</td>
           <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${r.qty}</td>
           <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${fmt(r.unitPrice)}</td>
           <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${fmt(r.tax)}</td>
@@ -604,9 +612,9 @@
         </tr>`;
     });
 
-    // Client address block
+    /* Client address */
     let clientAddr = '';
-    if (clientRFC)   clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${t.rfc}: ${clientRFC}</p>`;
+    if (clientRFC) clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">RFC: ${clientRFC}</p>`;
     const streetLine = [clientStr, clientExt].filter(Boolean).join(' ');
     if (streetLine)  clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${streetLine}</p>`;
     if (clientCol)   clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${clientCol}</p>`;
@@ -621,88 +629,89 @@
   <meta charset="UTF-8"/>
   <title>${t.title} ${invNum}</title>
   <style>
-    @page { size: A4; margin: 18mm 16mm; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
+    @page { size:A4; margin:16mm 18mm; }
+    *     { box-sizing:border-box; margin:0; padding:0; }
+    body  {
       font-family: Arial, Helvetica, sans-serif;
       color: #1e2926;
       background: white;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    @media print {
-      body { padding: 0; }
-      .no-print { display: none !important; }
-    }
     @media screen {
-      body { padding: 32px; max-width: 760px; margin: 0 auto; }
+      body { padding:32px; max-width:780px; margin:0 auto; }
+    }
+    @media print {
+      .no-print { display:none !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- PRINT BUTTON (screen only) -->
-  <div class="no-print" style="text-align:right;margin-bottom:20px;">
+  <!-- Screen-only save button -->
+  <div class="no-print" style="text-align:right;margin-bottom:24px;">
     <button onclick="window.print()" style="
-      background:#1d9e75;color:white;border:none;border-radius:8px;
-      padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;">
-      ⬇ Guardar como PDF
-    </button>
-    <p style="font-size:11px;color:#888;margin-top:6px;">Seleccioná "Guardar como PDF" en el diálogo de impresión</p>
+      background:#1aa090;color:white;border:none;border-radius:8px;
+      padding:11px 24px;font-size:13px;font-weight:600;cursor:pointer;
+      box-shadow:0 2px 8px rgba(26,160,144,0.3);">${t.saveBtn}</button>
+    <p style="font-size:11px;color:#aaa;margin-top:7px;">${t.saveNote}</p>
   </div>
 
   <!-- ══ INVOICE ══ -->
-  <div style="padding:32px;background:white;min-height:100%;">
+  <div style="background:white;">
 
     <!-- HEADER -->
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #1d9e75;">
-      <!-- Logo -->
+    <div style="display:flex;justify-content:space-between;align-items:center;
+                margin-bottom:28px;padding-bottom:18px;border-bottom:3px solid #1aa090;">
+      <!-- Logo + name -->
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:52px;height:52px;background:#1d9e75;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:26px;font-weight:800;flex-shrink:0;">M</div>
+        ${LOGO_SVG}
         <div>
           <p style="font-size:15px;font-weight:700;color:#1e2926;line-height:1.2;">Mach Consulting</p>
-          <p style="font-size:10px;color:#888;margin-top:1px;">machconsultinghr.com</p>
+          <p style="font-size:10px;color:#aaa;margin-top:2px;">machconsultinghr.com</p>
         </div>
       </div>
-      <!-- Title + Number -->
+      <!-- Title + number -->
       <div style="text-align:right;">
-        <p style="font-size:28px;font-weight:800;color:#1d9e75;letter-spacing:-0.5px;line-height:1;">${t.title}</p>
+        <p style="font-size:30px;font-weight:800;color:#1aa090;letter-spacing:-0.5px;line-height:1;">${t.title}</p>
         <p style="font-size:14px;font-weight:600;color:#1e2926;margin-top:4px;">${invNum}</p>
       </div>
     </div>
 
-    <!-- FROM / TO + DATES -->
+    <!-- FROM / TO / DATES -->
     <div style="display:flex;gap:0;margin-bottom:28px;">
       <!-- FROM -->
-      <div style="flex:1;padding-right:24px;border-right:1px solid #e8ede9;">
-        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">${t.from}</p>
+      <div style="flex:1;padding-right:22px;border-right:1px solid #e8ede9;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                  color:#1aa090;margin-bottom:10px;">${t.from}</p>
         <p style="font-size:13px;font-weight:700;color:#1e2926;margin-bottom:4px;">Mach Consulting LLC</p>
         <p style="font-size:11px;color:#555;margin:2px 0;">8 The Green</p>
-        <p style="font-size:11px;color:#555;margin:2px 0;">Dover, DE 19901</p>
-        <p style="font-size:11px;color:#555;margin:2px 0;">United States</p>
-        <p style="font-size:10px;color:#888;margin-top:8px;">EIN: 99 - 1082639</p>
-        <p style="font-size:10px;color:#888;margin:2px 0;">${t.responsible}: Juan Guitou</p>
+        <p style="font-size:11px;color:#555;margin:2px 0;">Dover, DE 19901 — United States</p>
+        <p style="font-size:10px;color:#999;margin-top:8px;">EIN: 99 - 1082639</p>
+        <p style="font-size:10px;color:#999;margin:2px 0;">${t.responsible}: Juan Guitou</p>
       </div>
       <!-- TO -->
-      <div style="flex:1;padding:0 24px;border-right:1px solid #e8ede9;">
-        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">${t.to}</p>
-        <p style="font-size:13px;font-weight:700;color:#1e2926;margin-bottom:4px;">${clientName || '—'}</p>
+      <div style="flex:1;padding:0 22px;border-right:1px solid #e8ede9;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                  color:#1aa090;margin-bottom:10px;">${t.to}</p>
+        <p style="font-size:13px;font-weight:700;color:#1e2926;margin-bottom:4px;">${clientName||'—'}</p>
         ${clientAddr}
       </div>
       <!-- DATES -->
-      <div style="flex:0 0 160px;padding-left:24px;">
-        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">Fechas</p>
+      <div style="flex:0 0 155px;padding-left:22px;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                  color:#1aa090;margin-bottom:10px;">Fechas</p>
         <div style="margin-bottom:10px;">
-          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.invoiceNum}</p>
-          <p style="font-size:12px;font-weight:600;color:#1e2926;">${invNum}</p>
+          <p style="font-size:10px;color:#999;margin-bottom:3px;">${t.invoiceNum}</p>
+          <p style="font-size:12px;font-weight:600;">${invNum}</p>
         </div>
         <div style="margin-bottom:10px;">
-          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.issue}</p>
-          <p style="font-size:12px;font-weight:600;color:#1e2926;">${issueDate || '—'}</p>
+          <p style="font-size:10px;color:#999;margin-bottom:3px;">${t.issue}</p>
+          <p style="font-size:12px;font-weight:600;">${issueDate}</p>
         </div>
         <div>
-          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.due}</p>
-          <p style="font-size:12px;font-weight:600;color:#1e2926;">${dueDate || '—'}</p>
+          <p style="font-size:10px;color:#999;margin-bottom:3px;">${t.due}</p>
+          <p style="font-size:12px;font-weight:600;">${dueDate}</p>
         </div>
       </div>
     </div>
@@ -710,67 +719,72 @@
     <!-- ITEMS TABLE -->
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
       <thead>
-        <tr style="background:#1d9e75;">
-          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:left;">${t.concept}</th>
-          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:60px;">${t.qty}</th>
-          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:110px;">${t.unitPrice}</th>
-          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:90px;">${t.tax}</th>
-          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:100px;">${t.subtotal}</th>
+        <tr style="background:#1aa090;">
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;
+                     letter-spacing:0.06em;color:white;text-align:left;">${t.concept}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;
+                     letter-spacing:0.06em;color:white;text-align:right;width:60px;">${t.qty}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;
+                     letter-spacing:0.06em;color:white;text-align:right;width:115px;">${t.unitPrice}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;
+                     letter-spacing:0.06em;color:white;text-align:right;width:90px;">${t.tax}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;
+                     letter-spacing:0.06em;color:white;text-align:right;width:100px;">${t.subtotal}</th>
         </tr>
       </thead>
       <tbody>
-        ${itemsHtml || `<tr><td colspan="5" style="padding:20px;text-align:center;color:#aaa;font-size:12px;">Sin conceptos</td></tr>`}
+        ${itemsHtml || `<tr><td colspan="5" style="padding:20px;text-align:center;color:#bbb;font-size:12px;">Sin conceptos</td></tr>`}
       </tbody>
     </table>
 
     <!-- TOTALS -->
-    <div style="display:flex;justify-content:flex-end;margin-bottom:32px;">
-      <div style="min-width:260px;">
-        <!-- Subtotal row -->
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef2f0;">
-          <span style="font-size:12px;color:#888;">${t.subtotal}</span>
-          <span style="font-size:12px;font-weight:600;color:#1e2926;">${fmt(totals.subtotal)}</span>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:36px;">
+      <div style="min-width:270px;">
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef2f0;">
+          <span style="font-size:12px;color:#999;">${t.subtotal}</span>
+          <span style="font-size:12px;font-weight:600;">${fmt(totals.subtotal)}</span>
         </div>
-        <!-- Tax row -->
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef2f0;">
-          <span style="font-size:12px;color:#888;">${t.tax}</span>
-          <span style="font-size:12px;font-weight:600;color:#1e2926;">${fmt(totals.totalTax)}</span>
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef2f0;">
+          <span style="font-size:12px;color:#999;">${t.tax}</span>
+          <span style="font-size:12px;font-weight:600;">${fmt(totals.totalTax)}</span>
         </div>
-        <!-- Total row -->
-        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1d9e75;border-radius:8px;margin-top:8px;">
-          <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:0.05em;">${t.total}</span>
-          <span style="font-size:18px;font-weight:800;color:white;">${fmt(totals.total)}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;
+                    padding:12px 16px;background:#1aa090;border-radius:8px;margin-top:10px;">
+          <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);
+                       text-transform:uppercase;letter-spacing:0.06em;">${t.total}</span>
+          <span style="font-size:20px;font-weight:800;color:white;">${fmt(totals.total)}</span>
         </div>
-        <!-- Currency note -->
-        <p style="font-size:10px;color:#aaa;text-align:right;margin-top:6px;">${t.currency}</p>
+        <p style="font-size:10px;color:#bbb;text-align:right;margin-top:6px;">${t.currency}</p>
       </div>
     </div>
 
     <!-- FOOTER -->
-    <div style="border-top:1px solid #eef2f0;padding-top:16px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="border-top:1px solid #eef2f0;padding-top:14px;
+                display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:24px;height:24px;background:#1d9e75;border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800;">M</div>
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+          <defs>
+            <linearGradient id="flg" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+              <stop offset="0%"   stop-color="#1aa090"/>
+              <stop offset="100%" stop-color="#1a4d8a"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="44" fill="none" stroke="url(#flg)" stroke-width="4"/>
+          <polyline points="3,97 31,7 66,97"  fill="none" stroke="url(#flg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="34,97 69,7 97,97" fill="none" stroke="url(#flg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <span style="font-size:10px;color:#aaa;">Mach Consulting LLC</span>
       </div>
       <p style="font-size:10px;color:#aaa;">${t.footer}</p>
     </div>
 
   </div><!-- /invoice -->
-
-  <script>
-    // Auto-trigger print after a brief delay so the page renders fully
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        // Don't auto-print — let user click the button
-      }, 500);
-    });
-  <\/script>
 </body>
 </html>`;
 
-    const pw = window.open('', '_blank', 'width=900,height=700');
+    const pw = window.open('', '_blank', 'width=920,height=720');
     if (!pw) {
-      alert('⚠️ El navegador bloqueó la ventana emergente.\nPor favor, permití las ventanas emergentes para este sitio en la barra de tu navegador e intentá de nuevo.');
+      alert('⚠️ El navegador bloqueó la ventana emergente.\nPermití ventanas emergentes para este sitio e intentá de nuevo.');
       return;
     }
     pw.document.open();
@@ -778,25 +792,16 @@
     pw.document.close();
   }
 
-  /* ─── INIT ──────────────────────────────────────── */
-  // Set today's date as default for issue date
+  /* ─── INIT ──────────────────────────────────── */
   const today = new Date();
-  const yyyy  = today.getFullYear();
-  const mm    = String(today.getMonth() + 1).padStart(2, '0');
-  const dd    = String(today.getDate()).padStart(2, '0');
-  document.getElementById('issueDate').value = `${yyyy}-${mm}-${dd}`;
+  const pad   = n => String(n).padStart(2,'0');
+  document.getElementById('issueDate').value =
+    `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  const due = new Date(today); due.setDate(due.getDate()+30);
+  document.getElementById('dueDate').value =
+    `${due.getFullYear()}-${pad(due.getMonth()+1)}-${pad(due.getDate())}`;
 
-  // Due date: 30 days from today
-  const due = new Date(today);
-  due.setDate(due.getDate() + 30);
-  const dy = due.getFullYear();
-  const dm = String(due.getMonth() + 1).padStart(2, '0');
-  const dd2 = String(due.getDate()).padStart(2, '0');
-  document.getElementById('dueDate').value = `${dy}-${dm}-${dd2}`;
-
-  // Start with one empty row
   addRow();
 </script>
-
 </body>
 </html>
