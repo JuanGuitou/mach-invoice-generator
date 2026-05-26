@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mach Invoice Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #2d2d2d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #1d9e75;
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1d9e75;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 1rem;
+            color: #1d9e75;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1d9e75;
+            box-shadow: 0 0 0 2px rgba(29, 158, 117, 0.1);
+        }
+
+        .grid-9 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d2d2d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th {
+            background: #1d9e75;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            text-align: center;
+        }
+
+        .delete-btn:hover {
+            color: #d32f2f;
+        }
+
+        .add-item-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .add-item-btn:hover {
+            background: #f0f0f0;
+            border-color: #1d9e75;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+
+        .summary-card.total {
+            background: #1d9e75;
+            border-color: #1d9e75;
+        }
+
+        .summary-card.total .summary-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .summary-card.total .summary-value {
+            color: white;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #1d9e75;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #159a6b;
+        }
+
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .company-info {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        .company-info p {
+            margin: 2px 0;
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: #2d2d2d;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mach Invoice Generator</h1>
+            <select id="language" onchange="changeLanguage()">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <!-- Invoice Details & Company Info -->
+        <div class="grid-2">
+            <div class="card">
+                <h2 id="invoiceHeader">Datos de la Factura</h2>
+                <div class="form-group">
+                    <label id="invoiceNumberLabel">Número de Factura</label>
+                    <input type="text" id="invoiceNumber" value="INV-001">
+                </div>
+                <div class="form-group">
+                    <label id="issueDateLabel">Fecha de Emisión</label>
+                    <input type="date" id="issueDate" value="2025-12-10">
+                </div>
+                <div class="form-group">
+                    <label id="dueDateLabel">Fecha de Vencimiento</label>
+                    <input type="date" id="dueDate" value="2025-12-19">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="companyHeader">Empresa</h2>
+                <div class="company-info">
+                    <p class="company-name">Mach Consulting LLC</p>
+                    <p>8 The Green</p>
+                    <p>19901 Dover, DE</p>
+                    <p>United States</p>
+                    <p style="margin-top: 8px; font-size: 12px;">EIN: 99 - 1082639</p>
+                    <p style="margin-top: 4px; font-size: 12px;">Responsable: Juan Guitou</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Data -->
+        <div class="card full-width">
+            <h2 id="clientHeader">Cliente</h2>
+            <div class="grid-9">
+                <div class="form-group">
+                    <label id="clientNameLabel">Nombre de la Empresa</label>
+                    <input type="text" id="clientName">
+                </div>
+                <div class="form-group">
+                    <label id="clientRFCLabel">RFC</label>
+                    <input type="text" id="clientRFC">
+                </div>
+                <div class="form-group">
+                    <label id="clientStreetLabel">Vialidad</label>
+                    <input type="text" id="clientStreet">
+                </div>
+                <div class="form-group">
+                    <label id="clientStreetNumberLabel">Número Exterior</label>
+                    <input type="text" id="clientStreetNumber">
+                </div>
+                <div class="form-group">
+                    <label id="clientColonyLabel">Colonia</label>
+                    <input type="text" id="clientColony">
+                </div>
+                <div class="form-group">
+                    <label id="clientCityLabel">Localidad</label>
+                    <input type="text" id="clientCity">
+                </div>
+                <div class="form-group">
+                    <label id="clientMunicipalityLabel">Municipio</label>
+                    <input type="text" id="clientMunicipality">
+                </div>
+                <div class="form-group">
+                    <label id="clientStateLabel">Entidad Federativa</label>
+                    <input type="text" id="clientState">
+                </div>
+                <div class="form-group">
+                    <label id="clientCountryLabel">País</label>
+                    <input type="text" id="clientCountry">
+                </div>
+            </div>
+        </div>
+
+        <!-- Line Items -->
+        <div style="margin-top: 2rem;">
+            <h2 id="itemsHeader">Conceptos</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="conceptHeader">Concepto</th>
+                            <th class="text-right" id="quantityHeader" style="width: 70px;">Cantidad</th>
+                            <th class="text-right" id="unitPriceHeader" style="width: 100px;">Precio Unitario</th>
+                            <th class="text-right" id="taxHeader" style="width: 80px;">Impuesto</th>
+                            <th class="text-right" id="subtotalHeader" style="width: 100px;">Subtotal</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTable">
+                        <tr class="item-row">
+                            <td><input type="text" class="concept" placeholder="Descripción"></td>
+                            <td class="text-right"><input type="number" class="quantity" value="1" step="1" style="width: 100%;"></td>
+                            <td class="text-right"><input type="number" class="unitPrice" value="0" step="0.01" style="width: 100%;"></td>
+                            <td class="text-right"><input type="number" class="tax" value="0" step="0.01" style="width: 100%;"></td>
+                            <td class="text-right"><span class="itemTotal">$0.00</span></td>
+                            <td><button class="delete-btn" onclick="removeItem(this)">✕</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="add-item-btn" onclick="addItem()" id="addItemBtn">+ Agregar Concepto</button>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary">
+            <div class="summary-card">
+                <div class="summary-label" id="subtotalLabel">Subtotal</div>
+                <div class="summary-value" id="subtotalValue">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label" id="taxLabel">Impuesto</div>
+                <div class="summary-value" id="taxValue">$0.00</div>
+            </div>
+            <div class="summary-card total">
+                <div class="summary-label" id="totalLabel">Total</div>
+                <div class="summary-value" id="totalValue">$0.00</div>
+            </div>
+        </div>
+
+        <!-- Download Button -->
+        <button class="download-btn" onclick="downloadTxt()" id="downloadBtn">⬇ Descargar como Texto</button>
+    </div>
+
+    <script>
+        const labels = {
+            es: {
+                invoiceHeader: 'Datos de la Factura',
+                invoiceNumber: 'Número de Factura',
+                issueDate: 'Fecha de Emisión',
+                dueDate: 'Fecha de Vencimiento',
+                companyHeader: 'Empresa',
+                clientHeader: 'Cliente',
+                clientName: 'Nombre de la Empresa',
+                clientRFC: 'RFC',
+                clientStreet: 'Vialidad',
+                clientStreetNumber: 'Número Exterior',
+                clientColony: 'Colonia',
+                clientCity: 'Localidad',
+                clientMunicipality: 'Municipio',
+                clientState: 'Entidad Federativa',
+                clientCountry: 'País',
+                itemsHeader: 'Conceptos',
+                concept: 'Concepto',
+                quantity: 'Cantidad',
+                unitPrice: 'Precio Unitario',
+                tax: 'Impuesto',
+                subtotal: 'Subtotal',
+                total: 'Total',
+                addItem: 'Agregar Concepto',
+                download: 'Descargar como Texto',
+                from: 'De',
+                to: 'Para',
+                invoice: 'Factura',
+                issue: 'Emisión',
+                due: 'Vencimiento'
+            },
+            en: {
+                invoiceHeader: 'Invoice Details',
+                invoiceNumber: 'Invoice Number',
+                issueDate: 'Issue Date',
+                dueDate: 'Due Date',
+                companyHeader: 'Company',
+                clientHeader: 'Client',
+                clientName: 'Company Name',
+                clientRFC: 'RFC',
+                clientStreet: 'Street',
+                clientStreetNumber: 'Exterior Number',
+                clientColony: 'Colony',
+                clientCity: 'City',
+                clientMunicipality: 'Municipality',
+                clientState: 'State',
+                clientCountry: 'Country',
+                itemsHeader: 'Line Items',
+                concept: 'Concept',
+                quantity: 'Quantity',
+                unitPrice: 'Unit Price',
+                tax: 'Tax',
+                subtotal: 'Subtotal',
+                total: 'Total',
+                addItem: 'Add Line Item',
+                download: 'Download as Text',
+                from: 'From',
+                to: 'To',
+                invoice: 'Invoice',
+                issue: 'Issue',
+                due: 'Due'
+            }
+        };
+
+        let currentLanguage = 'es';
+
+        function changeLanguage() {
+            currentLanguage = document.getElementById('language').value;
+            updateLabels();
+        }
+
+        function updateLabels() {
+            const t = labels[currentLanguage];
+            
+            document.getElementById('invoiceHeader').textContent = t.invoiceHeader;
+            document.getElementById('invoiceNumberLabel').textContent = t.invoiceNumber;
+            document.getElementById('issueDateLabel').textContent = t.issueDate;
+            document.getElementById('dueDateLabel').textContent = t.dueDate;
+            document.getElementById('companyHeader').textContent = t.companyHeader;
+            document.getElementById('clientHeader').textContent = t.clientHeader;
+            document.getElementById('clientNameLabel').textContent = t.clientName;
+            document.getElementById('clientRFCLabel').textContent = t.clientRFC;
+            document.getElementById('clientStreetLabel').textContent = t.clientStreet;
+            document.getElementById('clientStreetNumberLabel').textContent = t.clientStreetNumber;
+            document.getElementById('clientColonyLabel').textContent = t.clientColony;
+            document.getElementById('clientCityLabel').textContent = t.clientCity;
+            document.getElementById('clientMunicipalityLabel').textContent = t.clientMunicipality;
+            document.getElementById('clientStateLabel').textContent = t.clientState;
+            document.getElementById('clientCountryLabel').textContent = t.clientCountry;
+            document.getElementById('itemsHeader').textContent = t.itemsHeader;
+            document.getElementById('conceptHeader').textContent = t.concept;
+            document.getElementById('quantityHeader').textContent = t.quantity;
+            document.getElementById('unitPriceHeader').textContent = t.unitPrice;
+            document.getElementById('taxHeader').textContent = t.tax;
+            document.getElementById('subtotalHeader').textContent = t.subtotal;
+            document.getElementById('addItemBtn').textContent = '+ ' + t.addItem;
+            document.getElementById('subtotalLabel').textContent = t.subtotal;
+            document.getElementById('taxLabel').textContent = t.tax;
+            document.getElementById('totalLabel').textContent = t.total;
+            document.getElementById('downloadBtn').textContent = '⬇ ' + t.download;
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            let totalTax = 0;
+
+            document.querySelectorAll('.item-row').forEach(row => {
+                const qty = parseFloat(row.querySelector('.quantity').value) || 0;
+                const price = parseFloat(row.querySelector('.unitPrice').value) || 0;
+                const tax = parseFloat(row.querySelector('.tax').value) || 0;
+                
+                const itemSubtotal = qty * price;
+                const itemTotal = itemSubtotal + tax;
+                
+                row.querySelector('.itemTotal').textContent = '$' + itemTotal.toFixed(2);
+                
+                subtotal += itemSubtotal;
+                totalTax += tax;
+            });
+
+            const total = subtotal + totalTax;
+
+            document.getElementById('subtotalValue').textContent = '$' + subtotal.toFixed(2);
+            document.getElementById('taxValue').textContent = '$' + totalTax.toFixed(2);
+            document.getElementById('totalValue').textContent = '$' + total.toFixed(2);
+
+            return { subtotal, totalTax, total };
+        }
+
+        function addItem() {
+            const table = document.getElementById('itemsTable');
+            const row = document.createElement('tr');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <td><input type="text" class="concept" placeholder="Descripción"></td>
+                <td class="text-right"><input type="number" class="quantity" value="1" step="1" style="width: 100%;"></td>
+                <td class="text-right"><input type="number" class="unitPrice" value="0" step="0.01" style="width: 100%;"></td>
+                <td class="text-right"><input type="number" class="tax" value="0" step="0.01" style="width: 100%;"></td>
+                <td class="text-right"><span class="itemTotal">$0.00</span></td>
+                <td><button class="delete-btn" onclick="removeItem(this)">✕</button></td>
+            `;
+            table.appendChild(row);
+            attachItemListeners(row);
+        }
+
+        function removeItem(button) {
+            button.closest('tr').remove();
+            calculateTotals();
+        }
+
+        function attachItemListeners(row) {
+            row.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', calculateTotals);
+                input.addEventListener('input', calculateTotals);
+            });
+        }
+
+        function downloadTxt() {
+            const invoiceNum = document.getElementById('invoiceNumber').value;
+            const issueDate = document.getElementById('issueDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            
+            const clientName = document.getElementById('clientName').value;
+            const clientRFC = document.getElementById('clientRFC').value;
+            const clientStreet = document.getElementById('clientStreet').value;
+            const clientStreetNumber = document.getElementById('clientStreetNumber').value;
+            const clientColony = document.getElementById('clientColony').value;
+            const clientCity = document.getElementById('clientCity').value;
+            const clientMunicipality = document.getElementById('clientMunicipality').value;
+            const clientState = document.getElementById('clientState').value;
+            const clientCountry = document.getElementById('clientCountry').value;
+
+            const totals = calculateTotals();
+            
+            const t = labels[currentLanguage];
+
+            let content = '';
+            content += '═════════════════════════════════════════════════════\n';
+            content += (currentLanguage === 'es' ? 'FACTURA' : 'INVOICE') + ' #' + invoiceNum + '\n';
+            content += '═════════════════════════════════════════════════════\n\n';
+
+            content += currentLanguage === 'es' ? 'DE:' : 'FROM:\n';
+            content += 'Mach Consulting LLC\n';
+            content += '8 The Green\n';
+            content += '19901 Dover, DE\n';
+            content += 'United States\n';
+            content += 'EIN: 99 - 1082639\n';
+            content += 'Juan Guitou\n\n';
+
+            content += currentLanguage === 'es' ? 'PARA:' : 'TO:\n';
+            content += (clientName || '-') + '\n';
+            if (clientRFC) content += 'RFC: ' + clientRFC + '\n';
+            if (clientStreet || clientStreetNumber) content += clientStreet + ' ' + clientStreetNumber + '\n';
+            if (clientColony) content += clientColony + '\n';
+            if (clientCity || clientMunicipality) content += clientCity + ', ' + clientMunicipality + '\n';
+            if (clientState || clientCountry) content += clientState + ', ' + clientCountry + '\n';
+            
+            content += '\n─────────────────────────────────────────────────────\n';
+            content += (currentLanguage === 'es' ? 'FECHAS' : 'DATES') + '\n';
+            content += (currentLanguage === 'es' ? 'Emisión' : 'Issue') + ': ' + issueDate + '\n';
+            content += (currentLanguage === 'es' ? 'Vencimiento' : 'Due') + ': ' + dueDate + '\n';
+
+            content += '\n─────────────────────────────────────────────────────\n';
+            content += currentLanguage === 'es' ? 'CONCEPTOS' : 'LINE ITEMS\n';
+            content += '─────────────────────────────────────────────────────\n\n';
+
+            document.querySelectorAll('.item-row').forEach(row => {
+                const concept = row.querySelector('.concept').value || '-';
+                const quantity = row.querySelector('.quantity').value || 0;
+                const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
+                const tax = parseFloat(row.querySelector('.tax').value) || 0;
+                const itemTotal = (parseFloat(quantity) * unitPrice) + tax;
+
+                content += concept + '\n';
+                content += '  Cantidad: ' + quantity + ' | Precio: $' + unitPrice.toFixed(2) + ' | Impuesto: $' + tax.toFixed(2) + ' | Total: $' + itemTotal.toFixed(2) + '\n\n';
+            });
+
+            content += '═════════════════════════════════════════════════════\n';
+            content += (currentLanguage === 'es' ? 'RESUMEN' : 'SUMMARY') + '\n';
+            content += '═════════════════════════════════════════════════════\n';
+            content += (currentLanguage === 'es' ? 'Subtotal' : 'Subtotal') + ':     $' + totals.subtotal.toFixed(2) + '\n';
+            content += (currentLanguage === 'es' ? 'Impuesto' : 'Tax') + ':        $' + totals.totalTax.toFixed(2) + '\n';
+            content += '─────────────────────────────────────────────────────\n';
+            content += (currentLanguage === 'es' ? 'TOTAL' : 'TOTAL') + ':         $' + totals.total.toFixed(2) + '\n';
+            content += '═════════════════════════════════════════════════════\n\n';
+            content += 'Mach Consulting LLC\n';
+            content += 'juan@machconsultinghr.com\n';
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Factura_${invoiceNum}_${issueDate}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        document.querySelectorAll('.item-row').forEach(row => {
+            attachItemListeners(row);
+        });
+
+        document.getElementById('itemsTable').addEventListener('change', calculateTotals);
+        calculateTotals();
+    </script>
+</body>
+</html>
