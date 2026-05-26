@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mach Invoice Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -254,6 +254,188 @@
             color: #2d2d2d;
             margin-bottom: 4px;
         }
+
+        /* PDF Styles */
+        #pdfContent {
+            display: none;
+        }
+
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 15mm;
+            background: white;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            color: #2d2d2d;
+        }
+
+        .pdf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #1d9e75;
+        }
+
+        .pdf-logo-title {
+            flex: 1;
+        }
+
+        .pdf-logo {
+            width: 60px;
+            height: 60px;
+            background: #1d9e75;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .pdf-invoice-number {
+            text-align: right;
+        }
+
+        .pdf-invoice-number h1 {
+            font-size: 24pt;
+            color: #1d9e75;
+            margin: 0;
+        }
+
+        .pdf-invoice-number p {
+            font-size: 9pt;
+            color: #999;
+            margin: 4px 0 0 0;
+        }
+
+        .pdf-from-to {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .pdf-from, .pdf-to {
+            flex: 1;
+        }
+
+        .pdf-from h3, .pdf-to h3 {
+            font-size: 10pt;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .pdf-from p, .pdf-to p {
+            font-size: 9pt;
+            margin: 2px 0;
+            line-height: 1.4;
+        }
+
+        .pdf-dates {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 9pt;
+        }
+
+        .pdf-dates div {
+            flex: 1;
+        }
+
+        .pdf-dates strong {
+            color: #999;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 9pt;
+        }
+
+        .pdf-table thead {
+            background: #1d9e75;
+            color: white;
+        }
+
+        .pdf-table th {
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            border: none;
+        }
+
+        .pdf-table th.text-right {
+            text-align: right;
+        }
+
+        .pdf-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .pdf-table td.text-right {
+            text-align: right;
+        }
+
+        .pdf-table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .pdf-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            gap: 30px;
+        }
+
+        .pdf-totals-item {
+            text-align: right;
+        }
+
+        .pdf-totals-label {
+            font-size: 9pt;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .pdf-totals-value {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+
+        .pdf-totals-total {
+            border-top: 2px solid #1d9e75;
+            padding-top: 8px;
+        }
+
+        .pdf-totals-total .pdf-totals-label {
+            color: #1d9e75;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .pdf-totals-total .pdf-totals-value {
+            color: #1d9e75;
+            font-size: 13pt;
+        }
+
+        .pdf-footer {
+            text-align: center;
+            font-size: 8pt;
+            color: #999;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -389,6 +571,9 @@
         <!-- Download Button -->
         <button class="download-btn" onclick="downloadPDF()" id="downloadBtn">⬇ Descargar PDF</button>
     </div>
+
+    <!-- Hidden PDF Content -->
+    <div id="pdfContent"></div>
 
     <script>
         const labels = {
@@ -550,75 +735,10 @@
         }
 
         function downloadPDF() {
-            const { jsPDF } = window;
-            if (!jsPDF) {
-                alert('Error: jsPDF not loaded');
-                return;
-            }
-
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 15;
-            let yPos = margin;
-
-            const colorPrimary = [29, 158, 117];
-            const colorText = [45, 45, 45];
-            const colorSecondary = [150, 150, 150];
-
-            // Header
-            doc.setFontSize(24);
-            doc.setTextColor(...colorPrimary);
-            const headerText = currentLanguage === 'es' ? 'Factura' : 'Invoice';
-            doc.text(headerText, margin, yPos);
-            doc.setFontSize(14);
             const invoiceNum = document.getElementById('invoiceNumber').value;
-            doc.text(invoiceNum, pageWidth - margin - 40, yPos);
-
-            yPos += 12;
-
-            // Line
-            doc.setDrawColor(...colorPrimary);
-            doc.setLineWidth(0.5);
-            doc.line(margin, yPos, pageWidth - margin, yPos);
-
-            yPos += 8;
-
-            // From / To
-            doc.setFontSize(10);
-            doc.setTextColor(...colorSecondary);
-            const fromText = currentLanguage === 'es' ? 'De' : 'From';
-            const toText = currentLanguage === 'es' ? 'Para' : 'To';
-            doc.text(fromText, margin, yPos);
-            doc.text(toText, pageWidth / 2, yPos);
-
-            yPos += 6;
-
-            // Company
-            doc.setFontSize(9);
-            doc.setTextColor(...colorText);
-            const companyLines = [
-                'Mach Consulting LLC',
-                '8 The Green',
-                '19901 Dover, DE',
-                'United States',
-                'EIN: 99 - 1082639',
-                'Juan Guitou'
-            ];
+            const issueDate = document.getElementById('issueDate').value;
+            const dueDate = document.getElementById('dueDate').value;
             
-            companyLines.forEach(line => {
-                doc.text(line, margin, yPos);
-                yPos += 4;
-            });
-
-            // Client
-            const clientStartY = yPos - (companyLines.length * 4);
-            let clientY = clientStartY;
             const clientName = document.getElementById('clientName').value;
             const clientRFC = document.getElementById('clientRFC').value;
             const clientStreet = document.getElementById('clientStreet').value;
@@ -629,143 +749,115 @@
             const clientState = document.getElementById('clientState').value;
             const clientCountry = document.getElementById('clientCountry').value;
 
-            const clientLines = [
-                clientName,
-                clientRFC ? `RFC: ${clientRFC}` : '',
-                `${clientStreet} ${clientStreetNumber}`.trim(),
-                clientColony,
-                `${clientCity}, ${clientMunicipality}`.trim(),
-                `${clientState}, ${clientCountry}`.trim()
-            ].filter(line => line.trim());
+            const totals = calculateTotals();
+            
+            const t = labels[currentLanguage];
 
-            clientLines.forEach(line => {
-                doc.text(line, pageWidth / 2, clientY);
-                clientY += 4;
-            });
-
-            yPos = Math.max(yPos, clientY) + 8;
-
-            // Dates
-            doc.setFontSize(9);
-            doc.setTextColor(...colorSecondary);
-            const issueText = currentLanguage === 'es' ? 'Emisión' : 'Issue';
-            const dueText = currentLanguage === 'es' ? 'Vencimiento' : 'Due';
-            const issueDate = document.getElementById('issueDate').value;
-            const dueDate = document.getElementById('dueDate').value;
-            doc.text(`${issueText}: ${issueDate}`, margin, yPos);
-            doc.text(`${dueText}: ${dueDate}`, pageWidth / 2, yPos);
-
-            yPos += 12;
-
-            // Table
-            const colWidths = {
-                concept: 70,
-                quantity: 25,
-                unitPrice: 35,
-                tax: 25,
-                subtotal: 35
-            };
-
-            // Headers
-            doc.setFillColor(...colorPrimary);
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-
-            const conceptText = currentLanguage === 'es' ? 'Concepto' : 'Concept';
-            const qtyText = currentLanguage === 'es' ? 'Cant.' : 'Qty';
-            const unitPriceText = currentLanguage === 'es' ? 'P. Unit.' : 'Unit Price';
-            const taxText = currentLanguage === 'es' ? 'Impuesto' : 'Tax';
-            const subtotalText = currentLanguage === 'es' ? 'Subtotal' : 'Subtotal';
-
-            doc.rect(margin, yPos, colWidths.concept, 7, 'F');
-            doc.text(conceptText, margin + 2, yPos + 5);
-
-            doc.rect(margin + colWidths.concept, yPos, colWidths.quantity, 7, 'F');
-            doc.text(qtyText, margin + colWidths.concept + 2, yPos + 5);
-
-            doc.rect(margin + colWidths.concept + colWidths.quantity, yPos, colWidths.unitPrice, 7, 'F');
-            doc.text(unitPriceText, margin + colWidths.concept + colWidths.quantity + 2, yPos + 5);
-
-            doc.rect(margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice, yPos, colWidths.tax, 7, 'F');
-            doc.text(taxText, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + 2, yPos + 5);
-
-            doc.rect(margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax, yPos, colWidths.subtotal, 7, 'F');
-            doc.text(subtotalText, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax + 2, yPos + 5);
-
-            yPos += 9;
-
-            // Rows
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...colorText);
-            doc.setFontSize(8);
-
+            let tableRows = '';
             document.querySelectorAll('.item-row').forEach(row => {
-                if (yPos > pageHeight - 40) {
-                    doc.addPage();
-                    yPos = margin;
-                }
-
                 const concept = row.querySelector('.concept').value || '-';
                 const quantity = row.querySelector('.quantity').value || 0;
                 const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
                 const tax = parseFloat(row.querySelector('.tax').value) || 0;
                 const itemTotal = (parseFloat(quantity) * unitPrice) + tax;
 
-                doc.text(concept, margin + 2, yPos);
-                doc.text(quantity.toString(), margin + colWidths.concept + 2, yPos, { align: 'right' });
-                doc.text(`$${unitPrice.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + 2, yPos, { align: 'right' });
-                doc.text(`$${tax.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + 2, yPos, { align: 'right' });
-                doc.text(`$${itemTotal.toFixed(2)}`, margin + colWidths.concept + colWidths.quantity + colWidths.unitPrice + colWidths.tax + 2, yPos, { align: 'right' });
-
-                yPos += 6;
+                tableRows += `
+                    <tr>
+                        <td>${concept}</td>
+                        <td class="text-right">${quantity}</td>
+                        <td class="text-right">$${unitPrice.toFixed(2)}</td>
+                        <td class="text-right">$${tax.toFixed(2)}</td>
+                        <td class="text-right">$${itemTotal.toFixed(2)}</td>
+                    </tr>
+                `;
             });
 
-            yPos += 4;
+            const pdfContent = `
+                <div class="pdf-page">
+                    <div class="pdf-header">
+                        <div class="pdf-logo-title">
+                            <div class="pdf-logo">M</div>
+                        </div>
+                        <div class="pdf-invoice-number">
+                            <h1>${currentLanguage === 'es' ? 'Factura' : 'Invoice'}</h1>
+                            <p>${invoiceNum}</p>
+                        </div>
+                    </div>
 
-            // Separator line
-            doc.setDrawColor(...colorPrimary);
-            doc.setLineWidth(0.5);
-            doc.line(margin, yPos, pageWidth - margin, yPos);
+                    <div class="pdf-from-to">
+                        <div class="pdf-from">
+                            <h3>${currentLanguage === 'es' ? 'De' : 'From'}</h3>
+                            <p><strong>Mach Consulting LLC</strong></p>
+                            <p>8 The Green</p>
+                            <p>19901 Dover, DE</p>
+                            <p>United States</p>
+                            <p>EIN: 99 - 1082639</p>
+                            <p>Juan Guitou</p>
+                        </div>
+                        <div class="pdf-to">
+                            <h3>${currentLanguage === 'es' ? 'Para' : 'To'}</h3>
+                            <p><strong>${clientName || '-'}</strong></p>
+                            ${clientRFC ? `<p>RFC: ${clientRFC}</p>` : ''}
+                            ${clientStreet || clientStreetNumber ? `<p>${clientStreet} ${clientStreetNumber}</p>` : ''}
+                            ${clientColony ? `<p>${clientColony}</p>` : ''}
+                            ${clientCity || clientMunicipality ? `<p>${clientCity}, ${clientMunicipality}</p>` : ''}
+                            ${clientState || clientCountry ? `<p>${clientState}, ${clientCountry}</p>` : ''}
+                        </div>
+                    </div>
 
-            yPos += 6;
+                    <div class="pdf-dates">
+                        <div><strong>${currentLanguage === 'es' ? 'Emisión' : 'Issue'}:</strong> ${issueDate}</div>
+                        <div><strong>${currentLanguage === 'es' ? 'Vencimiento' : 'Due'}:</strong> ${dueDate}</div>
+                    </div>
 
-            // Totals
-            const totals = calculateTotals();
-            const totalX = pageWidth - margin - 60;
-            doc.setFontSize(9);
-            doc.setTextColor(...colorSecondary);
+                    <table class="pdf-table">
+                        <thead>
+                            <tr>
+                                <th>${t.concept}</th>
+                                <th class="text-right">${t.quantity}</th>
+                                <th class="text-right">${t.unitPrice}</th>
+                                <th class="text-right">${t.tax}</th>
+                                <th class="text-right">${t.subtotal}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
 
-            const subtotalLabel = currentLanguage === 'es' ? 'Subtotal:' : 'Subtotal:';
-            doc.text(subtotalLabel, totalX, yPos);
-            doc.text(`$${totals.subtotal.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
+                    <div class="pdf-totals">
+                        <div class="pdf-totals-item">
+                            <div class="pdf-totals-label">${t.subtotal}</div>
+                            <div class="pdf-totals-value">$${totals.subtotal}</div>
+                        </div>
+                        <div class="pdf-totals-item">
+                            <div class="pdf-totals-label">${t.tax}</div>
+                            <div class="pdf-totals-value">$${totals.totalTax}</div>
+                        </div>
+                        <div class="pdf-totals-item pdf-totals-total">
+                            <div class="pdf-totals-label">${t.total}</div>
+                            <div class="pdf-totals-value">$${totals.total}</div>
+                        </div>
+                    </div>
 
-            yPos += 6;
+                    <div class="pdf-footer">
+                        <p>Mach Consulting LLC | juan@machconsultinghr.com</p>
+                    </div>
+                </div>
+            `;
 
-            const taxLabel = currentLanguage === 'es' ? 'Impuesto:' : 'Tax:';
-            doc.text(taxLabel, totalX, yPos);
-            doc.text(`$${totals.totalTax.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
+            const element = document.getElementById('pdfContent');
+            element.innerHTML = pdfContent;
 
-            yPos += 8;
+            const opt = {
+                margin: 0,
+                filename: `Factura_${invoiceNum}_${issueDate}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-            // Total
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...colorPrimary);
-            doc.setFontSize(12);
-
-            const totalFinalLabel = currentLanguage === 'es' ? 'TOTAL:' : 'TOTAL:';
-            doc.text(totalFinalLabel, totalX, yPos);
-            doc.text(`$${totals.total.toFixed(2)}`, pageWidth - margin - 15, yPos, { align: 'right' });
-
-            // Footer
-            yPos = pageHeight - 15;
-            doc.setFontSize(8);
-            doc.setTextColor(...colorSecondary);
-            doc.text('Mach Consulting LLC | juan@machconsultinghr.com', pageWidth / 2, yPos, { align: 'center' });
-
-            // Save
-            const filename = `Factura_${invoiceNum}_${issueDate}.pdf`;
-            doc.save(filename);
+            html2pdf().set(opt).from(element).save();
         }
 
         // Initialize
