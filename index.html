@@ -1,697 +1,802 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mach Invoice Generator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mach Invoice Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-            color: #2d2d2d;
-        }
+    :root {
+      --green: #1d9e75;
+      --green-dark: #157a5b;
+      --green-light: #e8f5f0;
+      --gray-bg: #f4f6f5;
+      --gray-border: #e0e5e3;
+      --gray-text: #666;
+      --dark: #1e2926;
+      --radius: 10px;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 2rem;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--gray-bg);
+      color: var(--dark);
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #1d9e75;
-            padding-bottom: 1rem;
-        }
+    /* ── TOP BAR ── */
+    .topbar {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-        h1 {
-            font-size: 28px;
-            color: #1d9e75;
-        }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            cursor: pointer;
-            background: white;
-        }
+    .logo-mark {
+      width: 44px;
+      height: 44px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      flex-shrink: 0;
+    }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.1;
+    }
 
-        .card {
-            background: #f9f9f9;
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-        }
+    .logo-text span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--gray-text);
+      letter-spacing: 0.03em;
+    }
 
-        .card h2 {
-            font-size: 16px;
-            margin-bottom: 1rem;
-            color: #1d9e75;
-        }
+    /* ── WRAPPER ── */
+    .wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
+    /* ── CARD ── */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-border);
+      padding: 20px 24px;
+    }
 
-        label {
-            display: block;
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
 
-        input[type="text"],
-        input[type="date"],
-        input[type="number"] {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: inherit;
-        }
+    /* ── GRID LAYOUTS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 
-        input:focus {
-            outline: none;
-            border-color: #1d9e75;
-            box-shadow: 0 0 0 2px rgba(29, 158, 117, 0.1);
-        }
+    /* ── FORM FIELDS ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
 
-        .grid-9 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
+    label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #999;
+      letter-spacing: 0.04em;
+    }
 
-        .full-width {
-            grid-column: 1 / -1;
-        }
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--gray-border);
+      border-radius: 7px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--dark);
+      background: #fafafa;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
 
-        h2 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #2d2d2d;
-        }
+    input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+      background: white;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1rem;
-        }
+    /* ── COMPANY INFO BOX ── */
+    .company-box {
+      background: var(--green-light);
+      border: 1px solid #b8ddd1;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #2d5a49;
+    }
 
-        th {
-            background: #1d9e75;
-            color: white;
-            padding: 10px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-        }
+    .company-box .name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
 
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 13px;
-        }
+    .company-box .meta {
+      font-size: 11px;
+      color: #5a8a78;
+      margin-top: 6px;
+    }
 
-        tr:hover {
-            background: #f9f9f9;
-        }
+    /* ── ITEMS TABLE ── */
+    .table-wrapper { overflow-x: auto; }
 
-        .text-right {
-            text-align: right;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-        .delete-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 0;
-            width: 24px;
-            text-align: center;
-        }
+    thead th {
+      background: var(--green);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 10px 12px;
+    }
 
-        .delete-btn:hover {
-            color: #d32f2f;
-        }
+    thead th:first-child { border-radius: 7px 0 0 0; }
+    thead th:last-child  { border-radius: 0 7px 0 0; }
 
-        .add-item-btn {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            margin-top: 12px;
-            transition: all 0.2s;
-        }
+    tbody td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #f0f0f0;
+    }
 
-        .add-item-btn:hover {
-            background: #f0f0f0;
-            border-color: #1d9e75;
-        }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #fafcfb; }
 
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 2rem;
-        }
+    td input { background: transparent; border-color: transparent; }
+    td input:focus { background: white; border-color: var(--green); }
 
-        .summary-card {
-            background: #f9f9f9;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
+    .tr { text-align: right; }
+    .del-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 16px;
+      width: 28px;
+      line-height: 1;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .del-btn:hover { color: #d32f2f; background: #fef2f2; }
 
-        .summary-label {
-            font-size: 11px;
-            color: #999;
-            margin-bottom: 4px;
-        }
+    .add-btn {
+      margin-top: 12px;
+      padding: 8px 16px;
+      border: 1px dashed var(--gray-border);
+      border-radius: 7px;
+      background: white;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-text);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .add-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
 
-        .summary-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2d2d2d;
-        }
+    /* ── TOTALS ── */
+    .totals-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
 
-        .summary-card.total {
-            background: #1d9e75;
-            border-color: #1d9e75;
-        }
+    .total-box {
+      background: #f9faf9;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+    }
 
-        .summary-card.total .summary-label {
-            color: rgba(255, 255, 255, 0.8);
-        }
+    .total-box.highlight {
+      background: var(--green);
+      border-color: var(--green);
+    }
 
-        .summary-card.total .summary-value {
-            color: white;
-        }
+    .total-box .t-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      margin-bottom: 4px;
+    }
 
-        .download-btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #1d9e75;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+    .total-box.highlight .t-label { color: rgba(255,255,255,0.75); }
 
-        .download-btn:hover {
-            background: #159a6b;
-        }
+    .total-box .t-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--dark);
+    }
 
-        .download-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+    .total-box.highlight .t-value { color: white; }
 
-        .company-info {
-            font-size: 13px;
-            line-height: 1.8;
-            color: #666;
-        }
+    /* ── DOWNLOAD BUTTONS ── */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
-        .company-info p {
-            margin: 2px 0;
-        }
+    .dl-btn {
+      padding: 13px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
 
-        .company-name {
-            font-weight: 600;
-            color: #2d2d2d;
-            margin-bottom: 4px;
-        }
-    </style>
+    .dl-btn.es {
+      background: var(--green);
+      color: white;
+    }
+    .dl-btn.es:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(29,158,117,0.35); }
+
+    .dl-btn.en {
+      background: white;
+      color: var(--green);
+      border: 2px solid var(--green);
+    }
+    .dl-btn.en:hover { background: var(--green-light); transform: translateY(-1px); }
+
+    .dl-btn svg { flex-shrink: 0; }
+
+    /* ── CURRENCY TAG ── */
+    .currency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--green-light);
+      border: 1px solid #b8ddd1;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .btn-row { grid-template-columns: 1fr; }
+      .totals-row { grid-template-columns: 1fr; }
+      body { padding: 12px 8px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Mach Invoice Generator</h1>
-            <select id="language" onchange="changeLanguage()">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-            </select>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo-area">
+      <div class="logo-mark">M</div>
+      <div class="logo-text">
+        Mach Consulting
+        <span>Invoice Generator</span>
+      </div>
+    </div>
+    <span class="currency-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h4.5a2.5 2.5 0 0 1 0 5H9m0 0h5.5"/></svg>
+      USD
+    </span>
+  </div>
+
+  <div class="wrapper">
+
+    <!-- ROW 1: Invoice Details + Company -->
+    <div class="grid-2">
+
+      <div class="card">
+        <p class="card-title">Datos de la Factura</p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="field">
+            <label>Número de Factura</label>
+            <input type="text" id="invoiceNumber" value="INV-001" />
+          </div>
+          <div class="field">
+            <label>Fecha de Emisión</label>
+            <input type="date" id="issueDate" />
+          </div>
+          <div class="field">
+            <label>Fecha de Vencimiento</label>
+            <input type="date" id="dueDate" />
+          </div>
         </div>
+      </div>
 
-        <!-- Invoice Details & Company Info -->
-        <div class="grid-2">
-            <div class="card">
-                <h2 id="invoiceHeader">Datos de la Factura</h2>
-                <div class="form-group">
-                    <label id="invoiceNumberLabel">Número de Factura</label>
-                    <input type="text" id="invoiceNumber" value="INV-001">
-                </div>
-                <div class="form-group">
-                    <label id="issueDateLabel">Fecha de Emisión</label>
-                    <input type="date" id="issueDate" value="2025-12-10">
-                </div>
-                <div class="form-group">
-                    <label id="dueDateLabel">Fecha de Vencimiento</label>
-                    <input type="date" id="dueDate" value="2025-12-19">
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 id="companyHeader">Empresa</h2>
-                <div class="company-info">
-                    <p class="company-name">Mach Consulting LLC</p>
-                    <p>8 The Green</p>
-                    <p>19901 Dover, DE</p>
-                    <p>United States</p>
-                    <p style="margin-top: 8px; font-size: 12px;">EIN: 99 - 1082639</p>
-                    <p style="margin-top: 4px; font-size: 12px;">Responsable: Juan Guitou</p>
-                </div>
-            </div>
+      <div class="card">
+        <p class="card-title">Empresa Emisora</p>
+        <div class="company-box">
+          <p class="name">Mach Consulting LLC</p>
+          <p>8 The Green, Dover, DE 19901</p>
+          <p>United States</p>
+          <p class="meta">EIN: 99 - 1082639 &nbsp;·&nbsp; Responsable: Juan Guitou</p>
         </div>
+      </div>
 
-        <!-- Client Data -->
-        <div class="card full-width">
-            <h2 id="clientHeader">Cliente</h2>
-            <div class="grid-9">
-                <div class="form-group">
-                    <label id="clientNameLabel">Nombre de la Empresa</label>
-                    <input type="text" id="clientName">
-                </div>
-                <div class="form-group">
-                    <label id="clientRFCLabel">RFC</label>
-                    <input type="text" id="clientRFC">
-                </div>
-                <div class="form-group">
-                    <label id="clientStreetLabel">Vialidad</label>
-                    <input type="text" id="clientStreet">
-                </div>
-                <div class="form-group">
-                    <label id="clientStreetNumberLabel">Número Exterior</label>
-                    <input type="text" id="clientStreetNumber">
-                </div>
-                <div class="form-group">
-                    <label id="clientColonyLabel">Colonia</label>
-                    <input type="text" id="clientColony">
-                </div>
-                <div class="form-group">
-                    <label id="clientCityLabel">Localidad</label>
-                    <input type="text" id="clientCity">
-                </div>
-                <div class="form-group">
-                    <label id="clientMunicipalityLabel">Municipio</label>
-                    <input type="text" id="clientMunicipality">
-                </div>
-                <div class="form-group">
-                    <label id="clientStateLabel">Entidad Federativa</label>
-                    <input type="text" id="clientState">
-                </div>
-                <div class="form-group">
-                    <label id="clientCountryLabel">País</label>
-                    <input type="text" id="clientCountry">
-                </div>
-            </div>
-        </div>
-
-        <!-- Line Items -->
-        <div style="margin-top: 2rem;">
-            <h2 id="itemsHeader">Conceptos</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th id="conceptHeader">Concepto</th>
-                            <th class="text-right" id="quantityHeader" style="width: 70px;">Cantidad</th>
-                            <th class="text-right" id="unitPriceHeader" style="width: 100px;">Precio Unitario</th>
-                            <th class="text-right" id="taxHeader" style="width: 80px;">Impuesto</th>
-                            <th class="text-right" id="subtotalHeader" style="width: 100px;">Subtotal</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsTable">
-                        <tr class="item-row">
-                            <td><input type="text" class="concept" placeholder="Descripción"></td>
-                            <td class="text-right"><input type="number" class="quantity" value="1" step="1" style="width: 100%;"></td>
-                            <td class="text-right"><input type="number" class="unitPrice" value="0" step="0.01" style="width: 100%;"></td>
-                            <td class="text-right"><input type="number" class="tax" value="0" step="0.01" style="width: 100%;"></td>
-                            <td class="text-right"><span class="itemTotal">$0.00</span></td>
-                            <td><button class="delete-btn" onclick="removeItem(this)">✕</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button class="add-item-btn" onclick="addItem()" id="addItemBtn">+ Agregar Concepto</button>
-        </div>
-
-        <!-- Summary -->
-        <div class="summary">
-            <div class="summary-card">
-                <div class="summary-label" id="subtotalLabel">Subtotal</div>
-                <div class="summary-value" id="subtotalValue">$0.00</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label" id="taxLabel">Impuesto</div>
-                <div class="summary-value" id="taxValue">$0.00</div>
-            </div>
-            <div class="summary-card total">
-                <div class="summary-label" id="totalLabel">Total</div>
-                <div class="summary-value" id="totalValue">$0.00</div>
-            </div>
-        </div>
-
-        <!-- Download Button -->
-        <button class="download-btn" onclick="downloadPDF()" id="downloadBtn">⬇ Descargar PDF</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- ROW 2: Client Data -->
+    <div class="card">
+      <p class="card-title">Datos del Cliente</p>
+      <div class="grid-auto">
+        <div class="field">
+          <label>Nombre de la Empresa</label>
+          <input type="text" id="clientName" placeholder="Empresa S.A. de C.V." />
+        </div>
+        <div class="field">
+          <label>RFC</label>
+          <input type="text" id="clientRFC" placeholder="RFC123456XXX" />
+        </div>
+        <div class="field">
+          <label>Nombre de la Vialidad</label>
+          <input type="text" id="clientStreet" placeholder="Av. Insurgentes Sur" />
+        </div>
+        <div class="field">
+          <label>Número Exterior</label>
+          <input type="text" id="clientExtNum" placeholder="123" />
+        </div>
+        <div class="field">
+          <label>Nombre de la Colonia</label>
+          <input type="text" id="clientColony" placeholder="Roma Norte" />
+        </div>
+        <div class="field">
+          <label>Nombre de la Localidad</label>
+          <input type="text" id="clientCity" placeholder="Ciudad de México" />
+        </div>
+        <div class="field">
+          <label>Nombre del Municipio</label>
+          <input type="text" id="clientMunicipality" placeholder="Cuauhtémoc" />
+        </div>
+        <div class="field">
+          <label>Entidad Federativa</label>
+          <input type="text" id="clientState" placeholder="CDMX" />
+        </div>
+        <div class="field">
+          <label>País</label>
+          <input type="text" id="clientCountry" value="México" />
+        </div>
+      </div>
+    </div>
 
-    <script>
-        const labels = {
-            es: {
-                invoiceHeader: 'Datos de la Factura',
-                invoiceNumber: 'Número de Factura',
-                issueDate: 'Fecha de Emisión',
-                dueDate: 'Fecha de Vencimiento',
-                companyHeader: 'Empresa',
-                clientHeader: 'Cliente',
-                clientName: 'Nombre de la Empresa',
-                clientRFC: 'RFC',
-                clientStreet: 'Vialidad',
-                clientStreetNumber: 'Número Exterior',
-                clientColony: 'Colonia',
-                clientCity: 'Localidad',
-                clientMunicipality: 'Municipio',
-                clientState: 'Entidad Federativa',
-                clientCountry: 'País',
-                itemsHeader: 'Conceptos',
-                concept: 'Concepto',
-                quantity: 'Cantidad',
-                unitPrice: 'Precio Unitario',
-                tax: 'Impuesto',
-                subtotal: 'Subtotal',
-                total: 'Total',
-                addItem: 'Agregar Concepto',
-                download: 'Descargar PDF',
-                from: 'De',
-                to: 'Para',
-                invoice: 'Factura',
-                issue: 'Emisión',
-                due: 'Vencimiento'
-            },
-            en: {
-                invoiceHeader: 'Invoice Details',
-                invoiceNumber: 'Invoice Number',
-                issueDate: 'Issue Date',
-                dueDate: 'Due Date',
-                companyHeader: 'Company',
-                clientHeader: 'Client',
-                clientName: 'Company Name',
-                clientRFC: 'RFC',
-                clientStreet: 'Street',
-                clientStreetNumber: 'Exterior Number',
-                clientColony: 'Colony',
-                clientCity: 'City',
-                clientMunicipality: 'Municipality',
-                clientState: 'State',
-                clientCountry: 'Country',
-                itemsHeader: 'Line Items',
-                concept: 'Concept',
-                quantity: 'Quantity',
-                unitPrice: 'Unit Price',
-                tax: 'Tax',
-                subtotal: 'Subtotal',
-                total: 'Total',
-                addItem: 'Add Line Item',
-                download: 'Download PDF',
-                from: 'From',
-                to: 'To',
-                invoice: 'Invoice',
-                issue: 'Issue',
-                due: 'Due'
-            }
-        };
+    <!-- ROW 3: Items -->
+    <div class="card">
+      <p class="card-title">Conceptos</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">Concepto</th>
+              <th style="width:80px;text-align:right;">Cantidad</th>
+              <th style="width:130px;text-align:right;">Precio Unitario</th>
+              <th style="width:110px;text-align:right;">Impuesto (USD)</th>
+              <th style="width:110px;text-align:right;">Subtotal</th>
+              <th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+      <button class="add-btn" onclick="addRow()">＋ Agregar concepto</button>
+    </div>
 
-        let currentLanguage = 'es';
+    <!-- ROW 4: Totals -->
+    <div class="totals-row">
+      <div class="total-box">
+        <div class="t-label">Subtotal</div>
+        <div class="t-value" id="dispSubtotal">$0.00</div>
+      </div>
+      <div class="total-box">
+        <div class="t-label">Impuesto</div>
+        <div class="t-value" id="dispTax">$0.00</div>
+      </div>
+      <div class="total-box highlight">
+        <div class="t-label">Total USD</div>
+        <div class="t-value" id="dispTotal">$0.00</div>
+      </div>
+    </div>
 
-        function changeLanguage() {
-            currentLanguage = document.getElementById('language').value;
-            updateLabels();
-        }
+    <!-- ROW 5: Download buttons -->
+    <div class="btn-row">
+      <button class="dl-btn es" onclick="generatePDF('es')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar en Español (PDF)
+      </button>
+      <button class="dl-btn en" onclick="generatePDF('en')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download in English (PDF)
+      </button>
+    </div>
 
-        function updateLabels() {
-            const t = labels[currentLanguage];
-            
-            document.getElementById('invoiceHeader').textContent = t.invoiceHeader;
-            document.getElementById('invoiceNumberLabel').textContent = t.invoiceNumber;
-            document.getElementById('issueDateLabel').textContent = t.issueDate;
-            document.getElementById('dueDateLabel').textContent = t.dueDate;
-            document.getElementById('companyHeader').textContent = t.companyHeader;
-            document.getElementById('clientHeader').textContent = t.clientHeader;
-            document.getElementById('clientNameLabel').textContent = t.clientName;
-            document.getElementById('clientRFCLabel').textContent = t.clientRFC;
-            document.getElementById('clientStreetLabel').textContent = t.clientStreet;
-            document.getElementById('clientStreetNumberLabel').textContent = t.clientStreetNumber;
-            document.getElementById('clientColonyLabel').textContent = t.clientColony;
-            document.getElementById('clientCityLabel').textContent = t.clientCity;
-            document.getElementById('clientMunicipalityLabel').textContent = t.clientMunicipality;
-            document.getElementById('clientStateLabel').textContent = t.clientState;
-            document.getElementById('clientCountryLabel').textContent = t.clientCountry;
-            document.getElementById('itemsHeader').textContent = t.itemsHeader;
-            document.getElementById('conceptHeader').textContent = t.concept;
-            document.getElementById('quantityHeader').textContent = t.quantity;
-            document.getElementById('unitPriceHeader').textContent = t.unitPrice;
-            document.getElementById('taxHeader').textContent = t.tax;
-            document.getElementById('subtotalHeader').textContent = t.subtotal;
-            document.getElementById('addItemBtn').textContent = '+ ' + t.addItem;
-            document.getElementById('subtotalLabel').textContent = t.subtotal;
-            document.getElementById('taxLabel').textContent = t.tax;
-            document.getElementById('totalLabel').textContent = t.total;
-            document.getElementById('downloadBtn').textContent = '⬇ ' + t.download;
-        }
+  </div><!-- /wrapper -->
 
-        function calculateTotals() {
-            let subtotal = 0;
-            let totalTax = 0;
+<script>
+  /* ─── DATA ─────────────────────────────────────── */
+  const rows = [];
 
-            document.querySelectorAll('.item-row').forEach(row => {
-                const qty = parseFloat(row.querySelector('.quantity').value) || 0;
-                const price = parseFloat(row.querySelector('.unitPrice').value) || 0;
-                const tax = parseFloat(row.querySelector('.tax').value) || 0;
-                
-                const itemSubtotal = qty * price;
-                const itemTotal = itemSubtotal + tax;
-                
-                row.querySelector('.itemTotal').textContent = '$' + itemTotal.toFixed(2);
-                
-                subtotal += itemSubtotal;
-                totalTax += tax;
-            });
+  function addRow(concept = '', qty = 1, unitPrice = 0, tax = 0) {
+    const id = Date.now() + Math.random();
+    rows.push({ id, concept, qty, unitPrice, tax });
+    renderRows();
+    recalc();
+  }
 
-            const total = subtotal + totalTax;
+  function removeRow(id) {
+    const i = rows.findIndex(r => r.id === id);
+    if (i !== -1) rows.splice(i, 1);
+    renderRows();
+    recalc();
+  }
 
-            document.getElementById('subtotalValue').textContent = '$' + subtotal.toFixed(2);
-            document.getElementById('taxValue').textContent = '$' + totalTax.toFixed(2);
-            document.getElementById('totalValue').textContent = '$' + total.toFixed(2);
+  function renderRows() {
+    const tbody = document.getElementById('itemsBody');
+    tbody.innerHTML = '';
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text"   class="concept"   data-id="${row.id}" value="${esc(row.concept)}"   style="width:100%;min-width:180px;" placeholder="Descripción del servicio" /></td>
+        <td class="tr"><input type="number" class="qty"      data-id="${row.id}" value="${row.qty}"       style="width:100%;" min="0" step="1" /></td>
+        <td class="tr"><input type="number" class="unitPrice" data-id="${row.id}" value="${row.unitPrice}" style="width:100%;" min="0" step="0.01" /></td>
+        <td class="tr"><input type="number" class="tax"      data-id="${row.id}" value="${row.tax}"       style="width:100%;" min="0" step="0.01" /></td>
+        <td class="tr"><span class="row-total" data-id="${row.id}">$0.00</span></td>
+        <td><button class="del-btn" onclick="removeRow(${row.id})">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-            return { subtotal, totalTax, total };
-        }
+    // Attach live listeners
+    tbody.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const id = +inp.dataset.id;
+        const r = rows.find(x => x.id === id);
+        if (!r) return;
+        if (inp.classList.contains('concept'))   r.concept   = inp.value;
+        if (inp.classList.contains('qty'))        r.qty       = parseFloat(inp.value) || 0;
+        if (inp.classList.contains('unitPrice'))  r.unitPrice = parseFloat(inp.value) || 0;
+        if (inp.classList.contains('tax'))        r.tax       = parseFloat(inp.value) || 0;
+        recalc();
+      });
+    });
+  }
 
-        function addItem() {
-            const table = document.getElementById('itemsTable');
-            const row = document.createElement('tr');
-            row.className = 'item-row';
-            row.innerHTML = `
-                <td><input type="text" class="concept" placeholder="Descripción"></td>
-                <td class="text-right"><input type="number" class="quantity" value="1" step="1" style="width: 100%;"></td>
-                <td class="text-right"><input type="number" class="unitPrice" value="0" step="0.01" style="width: 100%;"></td>
-                <td class="text-right"><input type="number" class="tax" value="0" step="0.01" style="width: 100%;"></td>
-                <td class="text-right"><span class="itemTotal">$0.00</span></td>
-                <td><button class="delete-btn" onclick="removeItem(this)">✕</button></td>
-            `;
-            table.appendChild(row);
-            attachItemListeners(row);
-            calculateTotals();
-        }
+  function esc(str) {
+    return String(str).replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 
-        function removeItem(button) {
-            button.closest('tr').remove();
-            calculateTotals();
-        }
+  function recalc() {
+    let subtotal = 0, totalTax = 0;
+    rows.forEach(r => {
+      const lineSub = r.qty * r.unitPrice;
+      subtotal  += lineSub;
+      totalTax  += r.tax;
+      const el = document.querySelector(`.row-total[data-id="${r.id}"]`);
+      if (el) el.textContent = fmt(lineSub + r.tax);
+    });
+    document.getElementById('dispSubtotal').textContent = fmt(subtotal);
+    document.getElementById('dispTax').textContent      = fmt(totalTax);
+    document.getElementById('dispTotal').textContent    = fmt(subtotal + totalTax);
+    return { subtotal, totalTax, total: subtotal + totalTax };
+  }
 
-        function attachItemListeners(row) {
-            row.querySelectorAll('input').forEach(input => {
-                input.addEventListener('change', calculateTotals);
-                input.addEventListener('input', calculateTotals);
-            });
-        }
+  function fmt(n) {
+    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
-        function downloadPDF() {
-            const invoiceNum = document.getElementById('invoiceNumber').value;
-            const issueDate = document.getElementById('issueDate').value;
-            const dueDate = document.getElementById('dueDate').value;
-            
-            const clientName = document.getElementById('clientName').value;
-            const clientRFC = document.getElementById('clientRFC').value;
-            const clientStreet = document.getElementById('clientStreet').value;
-            const clientStreetNumber = document.getElementById('clientStreetNumber').value;
-            const clientColony = document.getElementById('clientColony').value;
-            const clientCity = document.getElementById('clientCity').value;
-            const clientMunicipality = document.getElementById('clientMunicipality').value;
-            const clientState = document.getElementById('clientState').value;
-            const clientCountry = document.getElementById('clientCountry').value;
+  function fmtDate(d) {
+    if (!d) return '';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
 
-            const totals = calculateTotals();
-            const t = labels[currentLanguage];
+  /* ─── PDF GENERATION ───────────────────────────── */
+  const T = {
+    es: {
+      title: 'FACTURA',
+      from: 'Emisor', to: 'Cliente',
+      invoiceNum: 'N° de Factura', issue: 'Fecha de Emisión', due: 'Fecha de Vencimiento',
+      concept: 'Concepto', qty: 'Cantidad', unitPrice: 'Precio Unitario',
+      tax: 'Impuesto', subtotal: 'Subtotal', total: 'Total',
+      currency: 'Moneda: Dólares Estadounidenses (USD)',
+      rfc: 'RFC', street: 'Vialidad', extNum: 'N° Exterior',
+      colony: 'Colonia', city: 'Localidad', municipality: 'Municipio',
+      state: 'Entidad Federativa', country: 'País',
+      responsible: 'Responsable',
+      footer: 'Mach Consulting LLC · juan@machconsultinghr.com'
+    },
+    en: {
+      title: 'INVOICE',
+      from: 'From', to: 'Bill To',
+      invoiceNum: 'Invoice Number', issue: 'Issue Date', due: 'Due Date',
+      concept: 'Description', qty: 'Qty', unitPrice: 'Unit Price',
+      tax: 'Tax', subtotal: 'Subtotal', total: 'Total',
+      currency: 'Currency: United States Dollars (USD)',
+      rfc: 'RFC', street: 'Street', extNum: 'Ext. Number',
+      colony: 'Colony', city: 'City', municipality: 'Municipality',
+      state: 'State', country: 'Country',
+      responsible: 'Contact',
+      footer: 'Mach Consulting LLC · juan@machconsultinghr.com'
+    }
+  };
 
-            let tableRows = '';
-            document.querySelectorAll('.item-row').forEach(row => {
-                const concept = row.querySelector('.concept').value || '-';
-                const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
-                const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
-                const tax = parseFloat(row.querySelector('.tax').value) || 0;
-                const itemTotal = (quantity * unitPrice) + tax;
+  function generatePDF(lang) {
+    const t = T[lang];
+    const totals = recalc();
 
-                tableRows += `
-                    <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0;">${concept}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">${quantity}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${unitPrice.toFixed(2)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${tax.toFixed(2)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${itemTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
+    // Gather form values
+    const invNum      = document.getElementById('invoiceNumber').value || '—';
+    const issueDate   = fmtDate(document.getElementById('issueDate').value);
+    const dueDate     = fmtDate(document.getElementById('dueDate').value);
+    const clientName  = document.getElementById('clientName').value;
+    const clientRFC   = document.getElementById('clientRFC').value;
+    const clientStr   = document.getElementById('clientStreet').value;
+    const clientExt   = document.getElementById('clientExtNum').value;
+    const clientCol   = document.getElementById('clientColony').value;
+    const clientCity  = document.getElementById('clientCity').value;
+    const clientMun   = document.getElementById('clientMunicipality').value;
+    const clientState = document.getElementById('clientState').value;
+    const clientCou   = document.getElementById('clientCountry').value;
 
-            const htmlContent = `
-                <div style="font-family: Arial, sans-serif; padding: 20px; background: white;">
-                    <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #1d9e75;">
-                        <div style="flex: 1;">
-                            <div style="width: 60px; height: 60px; background: #1d9e75; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: bold; margin-bottom: 10px;">M</div>
-                            <p style="font-size: 10px; color: #999; margin: 0;">Mach Consulting</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <h1 style="font-size: 32px; color: #1d9e75; margin: 0; line-height: 1;">${currentLanguage === 'es' ? 'FACTURA' : 'INVOICE'}</h1>
-                            <p style="font-size: 18px; color: #2d2d2d; margin: 5px 0 0 0; font-weight: bold;">${invoiceNum}</p>
-                        </div>
-                    </div>
+    // Build items rows HTML
+    let itemsHtml = '';
+    rows.forEach((r, i) => {
+      const lineSub = r.qty * r.unitPrice;
+      const lineTotal = lineSub + r.tax;
+      const bg = i % 2 === 0 ? '#fff' : '#f7faf9';
+      itemsHtml += `
+        <tr style="background:${bg};">
+          <td style="padding:9px 12px;font-size:12px;color:#1e2926;border-bottom:1px solid #eef2f0;">${r.concept || '—'}</td>
+          <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${r.qty}</td>
+          <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${fmt(r.unitPrice)}</td>
+          <td style="padding:9px 12px;font-size:12px;text-align:right;color:#1e2926;border-bottom:1px solid #eef2f0;">${fmt(r.tax)}</td>
+          <td style="padding:9px 12px;font-size:12px;text-align:right;font-weight:600;color:#1e2926;border-bottom:1px solid #eef2f0;">${fmt(lineTotal)}</td>
+        </tr>`;
+    });
 
-                    <!-- From / To -->
-                    <div style="display: flex; gap: 40px; margin-bottom: 30px;">
-                        <div style="flex: 1;">
-                            <p style="font-size: 11px; color: #999; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">${currentLanguage === 'es' ? 'De' : 'From'}</p>
-                            <p style="font-weight: bold; font-size: 12px; margin: 0;">Mach Consulting LLC</p>
-                            <p style="font-size: 11px; color: #666; margin: 2px 0;">8 The Green</p>
-                            <p style="font-size: 11px; color: #666; margin: 2px 0;">19901 Dover, DE</p>
-                            <p style="font-size: 11px; color: #666; margin: 2px 0;">United States</p>
-                            <p style="font-size: 10px; color: #999; margin: 8px 0 0 0;">EIN: 99 - 1082639</p>
-                        </div>
-                        <div style="flex: 1;">
-                            <p style="font-size: 11px; color: #999; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">${currentLanguage === 'es' ? 'Para' : 'To'}</p>
-                            <p style="font-weight: bold; font-size: 12px; margin: 0;">${clientName || '-'}</p>
-                            ${clientRFC ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">RFC: ${clientRFC}</p>` : ''}
-                            ${clientStreet || clientStreetNumber ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientStreet} ${clientStreetNumber}</p>` : ''}
-                            ${clientColony ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientColony}</p>` : ''}
-                            ${clientCity || clientMunicipality ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientCity}, ${clientMunicipality}</p>` : ''}
-                            ${clientState || clientCountry ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientState}, ${clientCountry}</p>` : ''}
-                        </div>
-                    </div>
+    // Client address block
+    let clientAddr = '';
+    if (clientRFC)   clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${t.rfc}: ${clientRFC}</p>`;
+    const streetLine = [clientStr, clientExt].filter(Boolean).join(' ');
+    if (streetLine)  clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${streetLine}</p>`;
+    if (clientCol)   clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${clientCol}</p>`;
+    const cityLine = [clientCity, clientMun].filter(Boolean).join(', ');
+    if (cityLine)    clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${cityLine}</p>`;
+    const stateLine = [clientState, clientCou].filter(Boolean).join(', ');
+    if (stateLine)   clientAddr += `<p style="margin:2px 0;font-size:11px;color:#555;">${stateLine}</p>`;
 
-                    <!-- Dates -->
-                    <div style="display: flex; gap: 40px; margin-bottom: 30px; font-size: 11px;">
-                        <div><strong>${currentLanguage === 'es' ? 'Emisión' : 'Issue'}:</strong> <span style="color: #666;">${issueDate}</span></div>
-                        <div><strong>${currentLanguage === 'es' ? 'Vencimiento' : 'Due'}:</strong> <span style="color: #666;">${dueDate}</span></div>
-                    </div>
+    const htmlDoc = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>${t.title} ${invNum}</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1e2926;
+      background: white;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media print {
+      body { padding: 0; }
+      .no-print { display: none !important; }
+    }
+    @media screen {
+      body { padding: 32px; max-width: 760px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
 
-                    <!-- Table -->
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 11px;">
-                        <thead>
-                            <tr style="background: #1d9e75; color: white;">
-                                <th style="padding: 10px; text-align: left; font-weight: bold;">${t.concept}</th>
-                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.quantity}</th>
-                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.unitPrice}</th>
-                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.tax}</th>
-                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.subtotal}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
+  <!-- PRINT BUTTON (screen only) -->
+  <div class="no-print" style="text-align:right;margin-bottom:20px;">
+    <button onclick="window.print()" style="
+      background:#1d9e75;color:white;border:none;border-radius:8px;
+      padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;">
+      ⬇ Guardar como PDF
+    </button>
+    <p style="font-size:11px;color:#888;margin-top:6px;">Seleccioná "Guardar como PDF" en el diálogo de impresión</p>
+  </div>
 
-                    <!-- Totals -->
-                    <div style="display: flex; justify-content: flex-end; gap: 40px; margin-bottom: 40px;">
-                        <div style="text-align: right;">
-                            <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${t.subtotal}</p>
-                            <p style="font-size: 13px; font-weight: bold; color: #2d2d2d; margin: 0;">$${totals.subtotal}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${t.tax}</p>
-                            <p style="font-size: 13px; font-weight: bold; color: #2d2d2d; margin: 0;">$${totals.totalTax}</p>
-                        </div>
-                        <div style="text-align: right; border-top: 3px solid #1d9e75; padding-top: 8px;">
-                            <p style="font-size: 11px; color: #1d9e75; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">${t.total}</p>
-                            <p style="font-size: 16px; font-weight: bold; color: #1d9e75; margin: 0;">$${totals.total}</p>
-                        </div>
-                    </div>
+  <!-- ══ INVOICE ══ -->
+  <div style="padding:32px;background:white;min-height:100%;">
 
-                    <!-- Footer -->
-                    <div style="text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 20px;">
-                        <p style="margin: 0;">Mach Consulting LLC | juan@machconsultinghr.com</p>
-                    </div>
-                </div>
-            `;
+    <!-- HEADER -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #1d9e75;">
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:52px;height:52px;background:#1d9e75;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:26px;font-weight:800;flex-shrink:0;">M</div>
+        <div>
+          <p style="font-size:15px;font-weight:700;color:#1e2926;line-height:1.2;">Mach Consulting</p>
+          <p style="font-size:10px;color:#888;margin-top:1px;">machconsultinghr.com</p>
+        </div>
+      </div>
+      <!-- Title + Number -->
+      <div style="text-align:right;">
+        <p style="font-size:28px;font-weight:800;color:#1d9e75;letter-spacing:-0.5px;line-height:1;">${t.title}</p>
+        <p style="font-size:14px;font-weight:600;color:#1e2926;margin-top:4px;">${invNum}</p>
+      </div>
+    </div>
 
-            const element = document.createElement('div');
-            element.innerHTML = htmlContent;
+    <!-- FROM / TO + DATES -->
+    <div style="display:flex;gap:0;margin-bottom:28px;">
+      <!-- FROM -->
+      <div style="flex:1;padding-right:24px;border-right:1px solid #e8ede9;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">${t.from}</p>
+        <p style="font-size:13px;font-weight:700;color:#1e2926;margin-bottom:4px;">Mach Consulting LLC</p>
+        <p style="font-size:11px;color:#555;margin:2px 0;">8 The Green</p>
+        <p style="font-size:11px;color:#555;margin:2px 0;">Dover, DE 19901</p>
+        <p style="font-size:11px;color:#555;margin:2px 0;">United States</p>
+        <p style="font-size:10px;color:#888;margin-top:8px;">EIN: 99 - 1082639</p>
+        <p style="font-size:10px;color:#888;margin:2px 0;">${t.responsible}: Juan Guitou</p>
+      </div>
+      <!-- TO -->
+      <div style="flex:1;padding:0 24px;border-right:1px solid #e8ede9;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">${t.to}</p>
+        <p style="font-size:13px;font-weight:700;color:#1e2926;margin-bottom:4px;">${clientName || '—'}</p>
+        ${clientAddr}
+      </div>
+      <!-- DATES -->
+      <div style="flex:0 0 160px;padding-left:24px;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1d9e75;margin-bottom:10px;">Fechas</p>
+        <div style="margin-bottom:10px;">
+          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.invoiceNum}</p>
+          <p style="font-size:12px;font-weight:600;color:#1e2926;">${invNum}</p>
+        </div>
+        <div style="margin-bottom:10px;">
+          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.issue}</p>
+          <p style="font-size:12px;font-weight:600;color:#1e2926;">${issueDate || '—'}</p>
+        </div>
+        <div>
+          <p style="font-size:10px;color:#888;margin-bottom:2px;">${t.due}</p>
+          <p style="font-size:12px;font-weight:600;color:#1e2926;">${dueDate || '—'}</p>
+        </div>
+      </div>
+    </div>
 
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: `Factura_${invoiceNum}_${issueDate}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+    <!-- ITEMS TABLE -->
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <thead>
+        <tr style="background:#1d9e75;">
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:left;">${t.concept}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:60px;">${t.qty}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:110px;">${t.unitPrice}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:90px;">${t.tax}</th>
+          <th style="padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:white;text-align:right;width:100px;">${t.subtotal}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml || `<tr><td colspan="5" style="padding:20px;text-align:center;color:#aaa;font-size:12px;">Sin conceptos</td></tr>`}
+      </tbody>
+    </table>
 
-            html2pdf().set(opt).from(element).save().catch(err => {
-                alert('Error al generar PDF. Por favor, intenta de nuevo.');
-                console.error(err);
-            });
-        }
+    <!-- TOTALS -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:32px;">
+      <div style="min-width:260px;">
+        <!-- Subtotal row -->
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef2f0;">
+          <span style="font-size:12px;color:#888;">${t.subtotal}</span>
+          <span style="font-size:12px;font-weight:600;color:#1e2926;">${fmt(totals.subtotal)}</span>
+        </div>
+        <!-- Tax row -->
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef2f0;">
+          <span style="font-size:12px;color:#888;">${t.tax}</span>
+          <span style="font-size:12px;font-weight:600;color:#1e2926;">${fmt(totals.totalTax)}</span>
+        </div>
+        <!-- Total row -->
+        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1d9e75;border-radius:8px;margin-top:8px;">
+          <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:0.05em;">${t.total}</span>
+          <span style="font-size:18px;font-weight:800;color:white;">${fmt(totals.total)}</span>
+        </div>
+        <!-- Currency note -->
+        <p style="font-size:10px;color:#aaa;text-align:right;margin-top:6px;">${t.currency}</p>
+      </div>
+    </div>
 
-        // Initialize
-        document.querySelectorAll('.item-row').forEach(row => {
-            attachItemListeners(row);
-        });
+    <!-- FOOTER -->
+    <div style="border-top:1px solid #eef2f0;padding-top:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:24px;height:24px;background:#1d9e75;border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800;">M</div>
+        <span style="font-size:10px;color:#aaa;">Mach Consulting LLC</span>
+      </div>
+      <p style="font-size:10px;color:#aaa;">${t.footer}</p>
+    </div>
 
-        document.getElementById('itemsTable').addEventListener('change', calculateTotals);
-        calculateTotals();
-    </script>
+  </div><!-- /invoice -->
+
+  <script>
+    // Auto-trigger print after a brief delay so the page renders fully
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        // Don't auto-print — let user click the button
+      }, 500);
+    });
+  <\/script>
+</body>
+</html>`;
+
+    const pw = window.open('', '_blank', 'width=900,height=700');
+    if (!pw) {
+      alert('⚠️ El navegador bloqueó la ventana emergente.\nPor favor, permití las ventanas emergentes para este sitio en la barra de tu navegador e intentá de nuevo.');
+      return;
+    }
+    pw.document.open();
+    pw.document.write(htmlDoc);
+    pw.document.close();
+  }
+
+  /* ─── INIT ──────────────────────────────────────── */
+  // Set today's date as default for issue date
+  const today = new Date();
+  const yyyy  = today.getFullYear();
+  const mm    = String(today.getMonth() + 1).padStart(2, '0');
+  const dd    = String(today.getDate()).padStart(2, '0');
+  document.getElementById('issueDate').value = `${yyyy}-${mm}-${dd}`;
+
+  // Due date: 30 days from today
+  const due = new Date(today);
+  due.setDate(due.getDate() + 30);
+  const dy = due.getFullYear();
+  const dm = String(due.getMonth() + 1).padStart(2, '0');
+  const dd2 = String(due.getDate()).padStart(2, '0');
+  document.getElementById('dueDate').value = `${dy}-${dm}-${dd2}`;
+
+  // Start with one empty row
+  addRow();
+</script>
+
 </body>
 </html>
