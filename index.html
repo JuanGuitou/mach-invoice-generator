@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mach Invoice Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -254,188 +253,6 @@
             color: #2d2d2d;
             margin-bottom: 4px;
         }
-
-        /* PDF Styles */
-        #pdfContent {
-            display: none;
-        }
-
-        .pdf-page {
-            width: 210mm;
-            height: 297mm;
-            padding: 15mm;
-            background: white;
-            font-family: Arial, sans-serif;
-            font-size: 10pt;
-            color: #2d2d2d;
-        }
-
-        .pdf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #1d9e75;
-        }
-
-        .pdf-logo-title {
-            flex: 1;
-        }
-
-        .pdf-logo {
-            width: 60px;
-            height: 60px;
-            background: #1d9e75;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .pdf-invoice-number {
-            text-align: right;
-        }
-
-        .pdf-invoice-number h1 {
-            font-size: 24pt;
-            color: #1d9e75;
-            margin: 0;
-        }
-
-        .pdf-invoice-number p {
-            font-size: 9pt;
-            color: #999;
-            margin: 4px 0 0 0;
-        }
-
-        .pdf-from-to {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 20px;
-        }
-
-        .pdf-from, .pdf-to {
-            flex: 1;
-        }
-
-        .pdf-from h3, .pdf-to h3 {
-            font-size: 10pt;
-            color: #999;
-            margin-bottom: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .pdf-from p, .pdf-to p {
-            font-size: 9pt;
-            margin: 2px 0;
-            line-height: 1.4;
-        }
-
-        .pdf-dates {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 9pt;
-        }
-
-        .pdf-dates div {
-            flex: 1;
-        }
-
-        .pdf-dates strong {
-            color: #999;
-        }
-
-        .pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 9pt;
-        }
-
-        .pdf-table thead {
-            background: #1d9e75;
-            color: white;
-        }
-
-        .pdf-table th {
-            padding: 8px;
-            text-align: left;
-            font-weight: bold;
-            border: none;
-        }
-
-        .pdf-table th.text-right {
-            text-align: right;
-        }
-
-        .pdf-table td {
-            padding: 8px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .pdf-table td.text-right {
-            text-align: right;
-        }
-
-        .pdf-table tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .pdf-totals {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-            gap: 30px;
-        }
-
-        .pdf-totals-item {
-            text-align: right;
-        }
-
-        .pdf-totals-label {
-            font-size: 9pt;
-            color: #999;
-            margin-bottom: 4px;
-        }
-
-        .pdf-totals-value {
-            font-size: 11pt;
-            font-weight: bold;
-            color: #2d2d2d;
-        }
-
-        .pdf-totals-total {
-            border-top: 2px solid #1d9e75;
-            padding-top: 8px;
-        }
-
-        .pdf-totals-total .pdf-totals-label {
-            color: #1d9e75;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .pdf-totals-total .pdf-totals-value {
-            color: #1d9e75;
-            font-size: 13pt;
-        }
-
-        .pdf-footer {
-            text-align: center;
-            font-size: 8pt;
-            color: #999;
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-        }
     </style>
 </head>
 <body>
@@ -572,8 +389,7 @@
         <button class="download-btn" onclick="downloadPDF()" id="downloadBtn">⬇ Descargar PDF</button>
     </div>
 
-    <!-- Hidden PDF Content -->
-    <div id="pdfContent"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         const labels = {
@@ -720,6 +536,7 @@
             `;
             table.appendChild(row);
             attachItemListeners(row);
+            calculateTotals();
         }
 
         function removeItem(button) {
@@ -750,74 +567,77 @@
             const clientCountry = document.getElementById('clientCountry').value;
 
             const totals = calculateTotals();
-            
             const t = labels[currentLanguage];
 
             let tableRows = '';
             document.querySelectorAll('.item-row').forEach(row => {
                 const concept = row.querySelector('.concept').value || '-';
-                const quantity = row.querySelector('.quantity').value || 0;
+                const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
                 const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
                 const tax = parseFloat(row.querySelector('.tax').value) || 0;
-                const itemTotal = (parseFloat(quantity) * unitPrice) + tax;
+                const itemTotal = (quantity * unitPrice) + tax;
 
                 tableRows += `
                     <tr>
-                        <td>${concept}</td>
-                        <td class="text-right">${quantity}</td>
-                        <td class="text-right">$${unitPrice.toFixed(2)}</td>
-                        <td class="text-right">$${tax.toFixed(2)}</td>
-                        <td class="text-right">$${itemTotal.toFixed(2)}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0;">${concept}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">${quantity}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${unitPrice.toFixed(2)}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${tax.toFixed(2)}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e0e0e0; text-align: right;">$${itemTotal.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
-            const pdfContent = `
-                <div class="pdf-page">
-                    <div class="pdf-header">
-                        <div class="pdf-logo-title">
-                            <div class="pdf-logo">M</div>
+            const htmlContent = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; background: white;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #1d9e75;">
+                        <div style="flex: 1;">
+                            <div style="width: 60px; height: 60px; background: #1d9e75; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: bold; margin-bottom: 10px;">M</div>
+                            <p style="font-size: 10px; color: #999; margin: 0;">Mach Consulting</p>
                         </div>
-                        <div class="pdf-invoice-number">
-                            <h1>${currentLanguage === 'es' ? 'Factura' : 'Invoice'}</h1>
-                            <p>${invoiceNum}</p>
-                        </div>
-                    </div>
-
-                    <div class="pdf-from-to">
-                        <div class="pdf-from">
-                            <h3>${currentLanguage === 'es' ? 'De' : 'From'}</h3>
-                            <p><strong>Mach Consulting LLC</strong></p>
-                            <p>8 The Green</p>
-                            <p>19901 Dover, DE</p>
-                            <p>United States</p>
-                            <p>EIN: 99 - 1082639</p>
-                            <p>Juan Guitou</p>
-                        </div>
-                        <div class="pdf-to">
-                            <h3>${currentLanguage === 'es' ? 'Para' : 'To'}</h3>
-                            <p><strong>${clientName || '-'}</strong></p>
-                            ${clientRFC ? `<p>RFC: ${clientRFC}</p>` : ''}
-                            ${clientStreet || clientStreetNumber ? `<p>${clientStreet} ${clientStreetNumber}</p>` : ''}
-                            ${clientColony ? `<p>${clientColony}</p>` : ''}
-                            ${clientCity || clientMunicipality ? `<p>${clientCity}, ${clientMunicipality}</p>` : ''}
-                            ${clientState || clientCountry ? `<p>${clientState}, ${clientCountry}</p>` : ''}
+                        <div style="text-align: right;">
+                            <h1 style="font-size: 32px; color: #1d9e75; margin: 0; line-height: 1;">${currentLanguage === 'es' ? 'FACTURA' : 'INVOICE'}</h1>
+                            <p style="font-size: 18px; color: #2d2d2d; margin: 5px 0 0 0; font-weight: bold;">${invoiceNum}</p>
                         </div>
                     </div>
 
-                    <div class="pdf-dates">
-                        <div><strong>${currentLanguage === 'es' ? 'Emisión' : 'Issue'}:</strong> ${issueDate}</div>
-                        <div><strong>${currentLanguage === 'es' ? 'Vencimiento' : 'Due'}:</strong> ${dueDate}</div>
+                    <!-- From / To -->
+                    <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 11px; color: #999; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">${currentLanguage === 'es' ? 'De' : 'From'}</p>
+                            <p style="font-weight: bold; font-size: 12px; margin: 0;">Mach Consulting LLC</p>
+                            <p style="font-size: 11px; color: #666; margin: 2px 0;">8 The Green</p>
+                            <p style="font-size: 11px; color: #666; margin: 2px 0;">19901 Dover, DE</p>
+                            <p style="font-size: 11px; color: #666; margin: 2px 0;">United States</p>
+                            <p style="font-size: 10px; color: #999; margin: 8px 0 0 0;">EIN: 99 - 1082639</p>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 11px; color: #999; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">${currentLanguage === 'es' ? 'Para' : 'To'}</p>
+                            <p style="font-weight: bold; font-size: 12px; margin: 0;">${clientName || '-'}</p>
+                            ${clientRFC ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">RFC: ${clientRFC}</p>` : ''}
+                            ${clientStreet || clientStreetNumber ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientStreet} ${clientStreetNumber}</p>` : ''}
+                            ${clientColony ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientColony}</p>` : ''}
+                            ${clientCity || clientMunicipality ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientCity}, ${clientMunicipality}</p>` : ''}
+                            ${clientState || clientCountry ? `<p style="font-size: 11px; color: #666; margin: 2px 0;">${clientState}, ${clientCountry}</p>` : ''}
+                        </div>
                     </div>
 
-                    <table class="pdf-table">
+                    <!-- Dates -->
+                    <div style="display: flex; gap: 40px; margin-bottom: 30px; font-size: 11px;">
+                        <div><strong>${currentLanguage === 'es' ? 'Emisión' : 'Issue'}:</strong> <span style="color: #666;">${issueDate}</span></div>
+                        <div><strong>${currentLanguage === 'es' ? 'Vencimiento' : 'Due'}:</strong> <span style="color: #666;">${dueDate}</span></div>
+                    </div>
+
+                    <!-- Table -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 11px;">
                         <thead>
-                            <tr>
-                                <th>${t.concept}</th>
-                                <th class="text-right">${t.quantity}</th>
-                                <th class="text-right">${t.unitPrice}</th>
-                                <th class="text-right">${t.tax}</th>
-                                <th class="text-right">${t.subtotal}</th>
+                            <tr style="background: #1d9e75; color: white;">
+                                <th style="padding: 10px; text-align: left; font-weight: bold;">${t.concept}</th>
+                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.quantity}</th>
+                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.unitPrice}</th>
+                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.tax}</th>
+                                <th style="padding: 10px; text-align: right; font-weight: bold;">${t.subtotal}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -825,39 +645,44 @@
                         </tbody>
                     </table>
 
-                    <div class="pdf-totals">
-                        <div class="pdf-totals-item">
-                            <div class="pdf-totals-label">${t.subtotal}</div>
-                            <div class="pdf-totals-value">$${totals.subtotal}</div>
+                    <!-- Totals -->
+                    <div style="display: flex; justify-content: flex-end; gap: 40px; margin-bottom: 40px;">
+                        <div style="text-align: right;">
+                            <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${t.subtotal}</p>
+                            <p style="font-size: 13px; font-weight: bold; color: #2d2d2d; margin: 0;">$${totals.subtotal}</p>
                         </div>
-                        <div class="pdf-totals-item">
-                            <div class="pdf-totals-label">${t.tax}</div>
-                            <div class="pdf-totals-value">$${totals.totalTax}</div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${t.tax}</p>
+                            <p style="font-size: 13px; font-weight: bold; color: #2d2d2d; margin: 0;">$${totals.totalTax}</p>
                         </div>
-                        <div class="pdf-totals-item pdf-totals-total">
-                            <div class="pdf-totals-label">${t.total}</div>
-                            <div class="pdf-totals-value">$${totals.total}</div>
+                        <div style="text-align: right; border-top: 3px solid #1d9e75; padding-top: 8px;">
+                            <p style="font-size: 11px; color: #1d9e75; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">${t.total}</p>
+                            <p style="font-size: 16px; font-weight: bold; color: #1d9e75; margin: 0;">$${totals.total}</p>
                         </div>
                     </div>
 
-                    <div class="pdf-footer">
-                        <p>Mach Consulting LLC | juan@machconsultinghr.com</p>
+                    <!-- Footer -->
+                    <div style="text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 20px;">
+                        <p style="margin: 0;">Mach Consulting LLC | juan@machconsultinghr.com</p>
                     </div>
                 </div>
             `;
 
-            const element = document.getElementById('pdfContent');
-            element.innerHTML = pdfContent;
+            const element = document.createElement('div');
+            element.innerHTML = htmlContent;
 
             const opt = {
-                margin: 0,
+                margin: [10, 10, 10, 10],
                 filename: `Factura_${invoiceNum}_${issueDate}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save();
+            html2pdf().set(opt).from(element).save().catch(err => {
+                alert('Error al generar PDF. Por favor, intenta de nuevo.');
+                console.error(err);
+            });
         }
 
         // Initialize
